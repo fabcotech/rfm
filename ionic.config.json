@@ -1,0 +1,7 @@
+{
+  "name": "rfm",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
