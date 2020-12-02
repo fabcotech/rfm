@@ -1,39 +1,107 @@
-import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
-import ViewMessage from './pages/ViewMessage';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import React, { useState } from 'react';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonInput,
+  IonLabel,
+  IonItem,
+  IonButton,
+} from '@ionic/react';
+import './App.css';
+import { Bag, State } from './store';
+import BagItem from './components/BagItem';
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
+interface AppProps {
+  registryUri: undefined | string;
+  bags: { [id: string]: Bag }
+  init: (a: { registryUri: string, privateKey: string }) => void;
+}
+const AppComponent: React.FC<AppProps> = (props) => {
 
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
+  const [privateKey, setPrivateKey] = useState<string>('');
+  const [registryUri, setRegstryUri] = useState<string>('');
 
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
+  if (props.registryUri) {
+    return (
+      <IonPage id="home-page">
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>RFM</IonTitle>
+          </IonToolbar>
+          <IonContent fullscreen>
+            {
+              Object.keys(props.bags).map(bagId => {
+                console.log(bagId, props.bags[bagId]);
+                return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
+              })
+            }
+          </IonContent>
+        </IonHeader>
+      </IonPage>
+    )
+  }
+  return (
+    <IonPage id="home-page">
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>RFM</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonContent fullscreen>
+        <form className="ion-padding">
+          <IonItem>
+            <IonLabel position="floating">Private key</IonLabel>
+            <IonInput
+              placeholder="private key" 
+              type="password" 
+              value={privateKey}
+              onIonChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Address</IonLabel>
+            <IonInput
+              placeholder="address" 
+              type="text" 
+              value={registryUri}
+              onIonChange={(e) => setRegstryUri((e.target as HTMLInputElement).value)}
+            ></IonInput>
+          </IonItem>
+          <IonButton
+            type="button"
+            onClick={(e) => {
+              props.init({ privateKey, registryUri });
+            }}
+            disabled={typeof registryUri !== "string" || typeof privateKey !== "string"}
+          >Retrieve files</IonButton>
+        </form>
+      </IonContent>
+    </IonPage>
+  );
+};
 
-/* Theme variables */
-import './theme/variables.css';
-
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route path="/home" component={Home} exact={true} />
-        <Route path="/message/:id" component={ViewMessage} exact={true} />
-        <Route exact path="/" render={() => <Redirect to="/home" />} />
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+export const App = connect((state: State) => {
+  return {
+    registryUri: state.registryUri,
+    bags: state.bags,
+  }
+}, (dispatch: Dispatch) => {
+  return {
+    init: (a: { registryUri: string, privateKey: string }) => {
+      dispatch({
+        type: 'INIT',
+        payload: {
+          privateKey: a.privateKey,
+          registryUri: a.registryUri,
+        }
+      })
+    }
+  }
+})(AppComponent);
 
 export default App;
