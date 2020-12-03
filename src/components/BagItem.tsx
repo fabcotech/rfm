@@ -1,10 +1,13 @@
 import React from 'react';
 import {
+  IonIcon,
   IonItem,
   IonLabel,
   } from '@ionic/react';
 import { Bag } from '../store';
 import './BagItem.css';
+
+import { document } from 'ionicons/icons';
 
 interface BagItemProps {
   bag: Bag;
@@ -14,7 +17,9 @@ interface BagItemProps {
 const BagItem: React.FC<BagItemProps> = ({ bag, id }) => {
   return (
     <IonItem detail={false}>
-      <div slot="start" className="dot dot-unread"></div>
+      <div className="IconContainer">
+        <IonIcon icon={document} size="large"/>
+      </div>
       <IonLabel className="ion-text-wrap">
         <h2>
           {id}

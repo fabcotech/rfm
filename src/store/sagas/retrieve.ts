@@ -8,6 +8,13 @@ const {
 const retrieve = function* (action: { type: string; payload: any}) {
   console.log('retrieve', action.payload);
 
+  yield put(
+    {
+      type: "SET_LOADING",
+      payload: true
+    }
+  );
+
   const term = readBagsTerm(action.payload.registryUri);
   const ed = yield rchainToolkit.http.exploreDeploy(
     "https://observer.testnet.rchain.coop",
@@ -21,6 +28,13 @@ const retrieve = function* (action: { type: string; payload: any}) {
     {
       type: "SAVE_BAGS",
       payload: rchainToolkit.utils.rhoValToJs(JSON.parse(ed).expr[0])
+    }
+  );
+
+  yield put(
+    {
+      type: "SET_LOADING",
+      payload: false
     }
   );
 
