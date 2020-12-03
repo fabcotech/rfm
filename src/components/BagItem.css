@@ -40,17 +40,8 @@ ion-item ion-note.md {
   margin-right: 14px;
 }
 
-.dot {
-  display: block;
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  align-self: start;
-  margin: 16px 10px 16px 16px;
-}
-
-.dot-unread {
-  background: var(--ion-color-primary);
+.IconContainer {
+  margin: 1em;
 }
 
 ion-footer ion-title {

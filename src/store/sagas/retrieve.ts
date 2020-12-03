@@ -24,6 +24,13 @@ const retrieve = function* (action: { type: string; payload: any}) {
     }
   );
 
+  yield put(
+    {
+      type: "SET_LOADING",
+      payload: false
+    }
+  );
+
   return true;
 };
 

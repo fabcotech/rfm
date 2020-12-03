@@ -6,7 +6,8 @@ import { sagas } from './store/sagas/';
 export interface State {
   registryUri: undefined | string;
   privateKey: undefined | string;
-  bags: { [id: string]: Bag }
+  bags: { [id: string]: Bag };
+  isLoading: boolean;
 }
 
 export interface Bag {
@@ -18,7 +19,8 @@ export interface Bag {
 const initialState: State = {
   registryUri: undefined,
   privateKey: undefined,
-  bags: {}
+  bags: {},
+  isLoading: false
 };
 
 const reducer = (state = initialState, action: { type: string; payload: any }) => {
@@ -29,6 +31,12 @@ const reducer = (state = initialState, action: { type: string; payload: any }) =
         ...state,
         registryUri: action.payload.registryUri,
         privateKey: action.payload.privateKey,
+      };
+    }
+    case "SET_LOADING": {
+      return {
+        ...state,
+        isLoading: action.payload,
       };
     }
     case "SAVE_BAGS": {

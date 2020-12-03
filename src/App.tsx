@@ -11,48 +11,44 @@ import {
   IonLabel,
   IonItem,
   IonButton,
+  IonLoading
 } from '@ionic/react';
 import './App.css';
 import { Bag, State } from './store';
 import BagItem from './components/BagItem';
 
 interface AppProps {
+  isLoading: boolean;
   registryUri: undefined | string;
   bags: { [id: string]: Bag }
   init: (a: { registryUri: string, privateKey: string }) => void;
+  SetLoading: (isLoadig: boolean) => void;
 }
 const AppComponent: React.FC<AppProps> = (props) => {
 
   const [privateKey, setPrivateKey] = useState<string>('');
   const [registryUri, setRegstryUri] = useState<string>('');
 
-  if (props.registryUri) {
-    return (
-      <IonPage id="home-page">
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>RFM</IonTitle>
-          </IonToolbar>
-          <IonContent fullscreen>
-            {
-              Object.keys(props.bags).map(bagId => {
-                console.log(bagId, props.bags[bagId]);
-                return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
-              })
-            }
-          </IonContent>
-        </IonHeader>
-      </IonPage>
-    )
-  }
   return (
-    <IonPage id="home-page">
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>RFM</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
+  <IonPage id="home-page">
+    <IonHeader>
+      <IonToolbar>
+        <IonTitle>RFM</IonTitle>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent fullscreen>
+      {
+      props.registryUri
+      ?
+      <React.Fragment>
+          <IonLoading isOpen={props.isLoading}></IonLoading> {
+          Object.keys(props.bags).map(bagId => {
+            console.log(bagId, props.bags[bagId]);
+            return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
+          })
+      }</React.Fragment>
+      :
+      <React.Fragment>
         <form className="ion-padding">
           <IonItem>
             <IonLabel position="floating">Private key</IonLabel>
@@ -75,13 +71,16 @@ const AppComponent: React.FC<AppProps> = (props) => {
           <IonButton
             type="button"
             onClick={(e) => {
+              props.SetLoading(true);
               props.init({ privateKey, registryUri });
             }}
             disabled={typeof registryUri !== "string" || typeof privateKey !== "string"}
           >Retrieve files</IonButton>
         </form>
-      </IonContent>
-    </IonPage>
+        </React.Fragment>
+      }
+    </IonContent>
+  </IonPage>
   );
 };
 
@@ -89,6 +88,7 @@ export const App = connect((state: State) => {
   return {
     registryUri: state.registryUri,
     bags: state.bags,
+    isLoading: state.isLoading,
   }
 }, (dispatch: Dispatch) => {
   return {
@@ -99,6 +99,12 @@ export const App = connect((state: State) => {
           privateKey: a.privateKey,
           registryUri: a.registryUri,
         }
+      })
+    },
+    SetLoading: (isLoading: boolean) => {
+      dispatch({
+        type: 'SET_LOADING',
+        payload: isLoading
       })
     }
   }
