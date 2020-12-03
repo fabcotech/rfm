@@ -22,7 +22,6 @@ interface AppProps {
   registryUri: undefined | string;
   bags: { [id: string]: Bag }
   init: (a: { registryUri: string, privateKey: string }) => void;
-  SetLoading: (isLoadig: boolean) => void;
 }
 const AppComponent: React.FC<AppProps> = (props) => {
 
@@ -71,7 +70,6 @@ const AppComponent: React.FC<AppProps> = (props) => {
           <IonButton
             type="button"
             onClick={(e) => {
-              props.SetLoading(true);
               props.init({ privateKey, registryUri });
             }}
             disabled={typeof registryUri !== "string" || typeof privateKey !== "string"}
@@ -99,12 +97,6 @@ export const App = connect((state: State) => {
           privateKey: a.privateKey,
           registryUri: a.registryUri,
         }
-      })
-    },
-    SetLoading: (isLoading: boolean) => {
-      dispatch({
-        type: 'SET_LOADING',
-        payload: isLoading
       })
     }
   }
