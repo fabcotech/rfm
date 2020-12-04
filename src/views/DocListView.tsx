@@ -34,6 +34,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
   //Route watcher
   useEffect(() => {
     if (uri && uri.includes('show')) {
+      console.log('show', uri);
       setShowModal('show');
     } else if (uri && uri.includes('upload')) {
       setShowModal('upload');
@@ -45,7 +46,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
   return (
     <IonContent>
       <IonModal isOpen={showModal === 'show'}>
-        <ModalDocument></ModalDocument>
+        <ModalDocument bags={{}} bagsData={{}}></ModalDocument>
         <IonButton onClick={() => {
           history.replace('/doc', { direction: 'back' })
         }}>
