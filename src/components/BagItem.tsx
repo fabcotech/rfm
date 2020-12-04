@@ -4,6 +4,8 @@ import {
   IonItem,
   IonLabel,
   } from '@ionic/react';
+
+import { useHistory } from 'react-router';
 import { Bag } from '../store';
 import './BagItem.css';
 
@@ -15,8 +17,11 @@ interface BagItemProps {
 }
 
 const BagItem: React.FC<BagItemProps> = ({ bag, id }) => {
+  const history = useHistory();
   return (
-    <IonItem detail={false}>
+    <IonItem detail={false} button onClick={() => {
+      history.push("/doc/" + id);
+    }}>
       <div className="IconContainer">
         <IonIcon icon={document} size="large"/>
       </div>
