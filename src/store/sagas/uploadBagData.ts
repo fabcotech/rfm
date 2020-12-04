@@ -1,4 +1,4 @@
-import { takeEvery } from 'redux-saga/effects';
+import { put, takeEvery } from 'redux-saga/effects';
 import * as rchainToolkit from 'rchain-toolkit';
 import { deflate } from 'pako';
 import { v4 } from "uuid";
@@ -25,6 +25,7 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     signatures: [],
   });
   const gzipped = Buffer.from(deflate(asJson)).toString("base64");
+  const newNonce = v4().replace(/-/g, "");
   const payload = {
     bags: {
       [`${action.payload.bagId}`]: {
@@ -39,7 +40,7 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
       [`${action.payload.bagId}`]: gzipped
     },
     nonce: state.nonce,
-    newNonce: v4().replace(/-/g, ""),
+    newNonce: newNonce,
   }
 
   const ba = rchainToolkit.utils.toByteArray(payload);
@@ -51,7 +52,6 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     signature,
   );
 
-  const timestamp = new Date().getTime();
   let validAfterBlockNumberResponse;
   try {
     validAfterBlockNumberResponse = JSON.parse(
@@ -64,6 +64,7 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     throw new Error("Unable to get last finalized block")
   }
 
+  const timestamp = new Date().getTime();
   const deployOptions = yield rchainToolkit.utils.getDeployOptions(
     "secp256k1",
     timestamp,
@@ -78,6 +79,15 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     state.validatorUrl,
     deployOptions
   )
+
+  yield put(
+    {
+      type: "UPLOAD_BAG_DATA_COMPLETED",
+      payload: {
+        nonce: newNonce,
+      }
+    }
+  );
 
   return true;
 };

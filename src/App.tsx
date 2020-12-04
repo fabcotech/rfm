@@ -41,8 +41,14 @@ const AppComponent: React.FC<AppProps> = (props) => {
         <IonContent>
 
           <IonRouterOutlet id="main">
-            <Route path="/doc/:uri?" render={(props) => (
-              <DockListView {...props}/>
+            <Route exact path="/doc/show/:bagId?" render={(props) => {
+              return <DockListView bagId={props.match.params.bagId} action="show" />
+            }} />
+            <Route exact path="/doc/" render={(props) => (
+              <DockListView action="list" />
+            )} />
+            <Route exact path="/doc/upload" render={(props) => (
+              <DockListView action="upload" />
             )} />
             <Route path="/" render={({ location }) => 
               <Redirect to={{

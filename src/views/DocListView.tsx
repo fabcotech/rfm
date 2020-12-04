@@ -1,7 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Redirect, useParams, useLocation } from 'react-router-dom';
 import { useHistory, RouteComponentProps } from 'react-router';
 
 import {
@@ -21,57 +20,54 @@ type TRouteParams = {
   uri: string; // since it route params
 }
 interface DockListViewProps {
+  action: 'show' | 'list' | 'upload';
+  bagId?: string;
   isLoading: boolean;
   bags: { [id: string]: Bag }
 }
 const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
   const history = useHistory();
-  let { uri } = useParams();
-
-  const [showModal, setShowModal] = useState<false | 'show' | 'upload'>(false);
-  const location = useLocation()
-
-  //Route watcher
-  useEffect(() => {
-    if (uri && uri.includes('show')) {
-      console.log('show', uri);
-      setShowModal('show');
-    } else if (uri && uri.includes('upload')) {
-      setShowModal('upload');
-    } else {
-      setShowModal(false);
-    }
-  }, [location]);
 
   return (
     <IonContent>
-      <IonModal isOpen={showModal === 'show'}>
-        <ModalDocument bags={{}} bagsData={{}}></ModalDocument>
-        <IonButton onClick={() => {
-          history.replace('/doc', { direction: 'back' })
-        }}>
-            Close
-        </IonButton>
-      </IonModal>
-      <IonModal isOpen={showModal === 'upload'}>
-        <ModalUploadDocument></ModalUploadDocument>
-        <IonButton onClick={() => {
-          history.replace('/doc', { direction: 'back' })
-        }}>
-            Close
-        </IonButton>
-      </IonModal>
-      <IonLoading isOpen={props.isLoading && !showModal}></IonLoading>
       <Horizontal />
       {
-        !props.isLoading ?
-          Object.keys(props.bags).map(bagId => {
-            return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
-          })
-          :
-          [...Array(10)].map((x, i) =>
-            <DummyBagItem key={i} id={i.toString()} />
-          )
+        props.action === "show" ?
+        <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
+          <ModalDocument bagId={props.bagId as string}></ModalDocument>
+          <IonButton onClick={() => {
+            history.push("/doc/")
+          }}>
+              Close
+          </IonButton>
+        </IonModal> : undefined
+      }
+      {
+        props.action === "upload" ?
+        <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
+          <ModalUploadDocument></ModalUploadDocument>
+          <IonButton onClick={() => {
+            history.push("/doc/")
+          }}>
+              Close
+          </IonButton>
+        </IonModal> : undefined
+      }
+      {
+        props.action == "list" ?
+        <>
+          <IonLoading isOpen={props.isLoading && props.action === "list"}></IonLoading>
+          {
+            !props.isLoading ?
+              Object.keys(props.bags).map(bagId => {
+                return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
+              })
+              :
+              [...Array(10)].map((x, i) =>
+                <DummyBagItem key={i} id={i.toString()} />
+              )
+          }
+        </> : undefined
       }
     </IonContent>
   )

@@ -84,7 +84,6 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
   };
 
   render() {
-    console.log(this.state.document)
     return <>
       <IonHeader>
         <IonToolbar color="primary">

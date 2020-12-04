@@ -22,7 +22,6 @@ const loadBagData = function* (action: { type: string; payload: any}) {
   );
 
   const term = readBagOrTokenDataTerm(state.registryUri, 'bags', action.payload.bagId);
-  console.log(term);
   const ed = yield rchainToolkit.http.exploreDeploy(
     state.readOnlyUrl,
     {
@@ -31,15 +30,12 @@ const loadBagData = function* (action: { type: string; payload: any}) {
   );
 
   try {
-    const dataAtNameBuffer = Buffer.from(rchainToolkit.utils.rhoValToJs(JSON.parse(ed).expr[0]), 'base64');
-    console.log(dataAtNameBuffer)
-    // pako.inflate returns a UInt8Array
+    const dataAtNameBuffer = Buffer.from(decodeURI(rchainToolkit.utils.rhoValToJs(JSON.parse(ed).expr[0])), 'base64');
     const unzippedBuffer = Buffer.from(inflate(dataAtNameBuffer));
-    console.log(1, unzippedBuffer)
     const fileAsString = unzippedBuffer.toString("utf-8");
-    console.log(2, fileAsString)
     const fileAsJson = JSON.parse(fileAsString);
-    console.log(3, fileAsJson)
+
+    fileAsJson.data = Buffer.from(fileAsJson.data, 'base64').toString("utf-8");
     yield put(
       {
         type: "SAVE_BAG_DATA_COMPLETED",
@@ -50,7 +46,16 @@ const loadBagData = function* (action: { type: string; payload: any}) {
       }
     );
   } catch (err) {
-
+    console.log(err);
+    yield put(
+      {
+        type: "SAVE_BAG_DATA_COMPLETED",
+        payload: {
+          bagId: action.payload.bagId,
+          document: null,
+        }
+      }
+    );
   }
 
   yield put(

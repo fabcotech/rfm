@@ -15,8 +15,8 @@ export interface State {
   privateKey: undefined | string;
 
   // rchain-token bags and data
-  bags: { [id: string]: Bag };
-  bagsData: { [id: string]: File };
+  bags: { [bagId: string]: Bag };
+  bagsData: { [bagId: string]: Document };
 
   isLoading: boolean;
 }
@@ -37,14 +37,14 @@ const initialState: State = {
   readOnlyUrl: 'http://localhost:40403',
   validatorUrl: 'http://localhost:40403',
   nonce: undefined,
-  registryUri: undefined,
-  privateKey: undefined,
+  registryUri: '1hgw3dqkkwpocjhfgzqyhfzc8dbdoi5b4f5n6dphtyas4ga643your',
+  privateKey: 'a2803d16030f83757a5043e5c0e28573685f6d8bf4e358bf1385d82bffa8e698',
   bags: {},
   bagsData: {},
   isLoading: false
 };
 
-const reducer = (state = initialState, action: { type: string; payload: any }) => {
+const reducer = (state = initialState, action: { type: string; payload: any }): State => {
   console.log(action);
   switch (action.type) {
     case "INIT": {
@@ -66,25 +66,25 @@ const reducer = (state = initialState, action: { type: string; payload: any }) =
         isLoading: action.payload,
       };
     }
-    case "SET_LOADING_BAG": {
-      return {
-        ...state,
-        isLoadingBag: action.payload,
-      };
-    }
     case "SAVE_BAGS_COMPLETED": {
       return {
         ...state,
         bags: action.payload,
       };
     }
-    case "SAVE_BAGS_DATA_COMPLETED": {
+    case "SAVE_BAG_DATA_COMPLETED": {
       return {
         ...state,
-        bagData:{
-            ...state.bagsData,
-            [action.payload.bagId]: action.payload.document,
+        bagsData:{
+          ...state.bagsData,
+          [action.payload.bagId]: action.payload.document,
         },
+      };
+    }
+    case "UPLOAD_BAG_DATA_COMPLETED": {
+      return {
+        ...state,
+        nonce: action.payload.nonce,
       };
     }
     default: {

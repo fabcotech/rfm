@@ -16,15 +16,12 @@ import { document } from 'ionicons/icons';
 interface BagItemProps {
   bag: Bag;
   id: string;
-  loadBag: (bagId: string) => void;
 }
 
-const BagItemComponent: React.FC<BagItemProps> = ({ bag, loadBag, id }) => {
+const BagItemComponent: React.FC<BagItemProps> = ({ bag, id }) => {
   const history = useHistory();
   return (
     <IonItem detail={false} button onClick={() => {
-      loadBag(id)
-      console.log("/doc/show/" + id)
       history.push("/doc/show/" + id);
     }}>
       <div className="IconContainer">
@@ -41,18 +38,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, loadBag, id }) => {
 
 const BagItem = connect(
   undefined,
-  (dispatch: Dispatch) => {
-    return {
-      loadBag: (bagId: string) => {
-        dispatch({
-          type: 'LOAD_BAG_DATA',
-          payload: {
-            bagId: bagId,
-          }
-        })
-      }
-    }
-  }
+  undefined,
 )(BagItemComponent);
 
 export default BagItem;
