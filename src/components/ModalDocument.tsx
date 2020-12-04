@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
-import {IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon} from '@ionic/react';
+import {IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton } from '@ionic/react';
 import { State } from '../store';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { document as documentIcon } from 'ionicons/icons';
+import { useHistory } from 'react-router';
 
-import './ModalDocument.css';
+//import './ModalDocument.css';
+
+import QRCodeComponent from './QRCodeComponent';
 
 interface ModalDocumentProps {
   bagId: string;
@@ -15,6 +18,7 @@ interface ModalDocumentProps {
 }
 
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocumentProps) => {
+  const history = useHistory();
 
   useEffect(() => {
     props.loadBag(props.bagId);
@@ -25,9 +29,18 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
     <IonHeader>
       <IonToolbar color="primary">
         <IonTitle>Document Viewer</IonTitle>
+        <IonButtons slot="end">
+          <IonButton onClick={() => {
+            history.replace('/doc', { direction: 'back' })
+          }}>
+              Close
+          </IonButton>
+        </IonButtons>
+        <IonIcon icon={documentIcon} slot="start" size="large"></IonIcon>
       </IonToolbar>
     </IonHeader>
     <IonContent className="ion-padding">
+      <QRCodeComponent url="http://localhost:3000" />
       {
         typeof document === 'undefined' ?
         <IonLoading isOpen={true}></IonLoading> : undefined

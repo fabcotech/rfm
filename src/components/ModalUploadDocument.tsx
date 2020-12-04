@@ -1,20 +1,32 @@
 import React from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import {IonHeader, IonContent, IonToolbar, IonTitle, IonItem, IonLabel, IonInput, IonIcon, IonButton} from '@ionic/react';
-import { document } from 'ionicons/icons';
+import {IonHeader, IonContent, IonToolbar, IonTitle, IonItem, IonLabel, IonInput, IonIcon, IonButtons, IonButton } from '@ionic/react';
+import { document as documentIcon, cloudUpload } from 'ionicons/icons';
+
+import { useHistory, RouteComponentProps } from 'react-router';
 
 import './ModalUploadDocument.css';
 import { Bag, State, Document } from '../store';
 
-interface ModalUploadDocumentProps {
+
+//Instead of deprecated withRouter
+export const withHistory = (Component: any) => {
+  return (props: any) => {
+    const history = useHistory();
+
+    return <Component history={history} {...props} />;
+  };
+};
+
+interface ModalUploadDocumentProps extends RouteComponentProps {
   bags: { [bagId: string]: Bag };
   upload: (bagId: string, document: Document) => void
 }
 interface ModalUploadDocumentState {
   bagId: string;
   dropErrors: string[];
-  document: undefined | Document
+  document: undefined | Document;
 }
 class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentProps, ModalUploadDocumentState> {
   constructor(props: ModalUploadDocumentProps) {
@@ -22,7 +34,7 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
     this.state = {
       document: undefined,
       bagId: '',
-      dropErrors: [],
+      dropErrors: []
     }
   }
   dropEl: HTMLTextAreaElement | undefined = undefined;
@@ -88,6 +100,14 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle>Upload to the blockchain</IonTitle>
+            <IonButtons slot="end">
+            <IonButton onClick={() => {
+              this.props.history.replace('/doc', { direction: 'back' })
+            }}>
+                Close
+            </IonButton>
+          </IonButtons>
+          <IonIcon icon={cloudUpload} slot="start" size="large"></IonIcon>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
@@ -104,13 +124,13 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
         </IonItem>
         <div className={`drop-area ${!!this.state.document ? 'hide' : ''}`}>
           <textarea ref={this.saveRef} />
-          <span><IonIcon icon={document} size="large"/> Drop your file</span>
+          <span><IonIcon icon={documentIcon} size="large"/> Drop your file</span>
         </div>
         {
           this.state.document ?
           <div className="document">
             <div className="left">
-            <IonIcon icon={document} size="large"/>
+            <IonIcon icon={documentIcon} size="large"/>
             </div>
             <div className="right">
               <h5>{this.state.document.name}</h5>
@@ -165,4 +185,4 @@ const ModalUploadDocument = connect(
   },
 )(ModalUploadDocumentComponent);
 
-export default ModalUploadDocument;
+export default withHistory(ModalUploadDocument);

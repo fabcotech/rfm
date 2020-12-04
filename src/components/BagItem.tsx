@@ -11,7 +11,7 @@ import { useHistory } from 'react-router';
 import { Bag } from '../store';
 import './BagItem.css';
 
-import { document } from 'ionicons/icons';
+import { document as documentIcon } from 'ionicons/icons';
 
 interface BagItemProps {
   bag: Bag;
@@ -25,7 +25,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, id }) => {
       history.push("/doc/show/" + id);
     }}>
       <div className="IconContainer">
-        <IonIcon icon={document} size="large"/>
+        <IonIcon icon={documentIcon} size="large"/>
       </div>
       <IonLabel className="ion-text-wrap">
         <h2>
