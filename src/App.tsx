@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
+import React  from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import {
   IonContent,
@@ -14,6 +14,7 @@ import './App.css';
 import { Bag, State } from './store';
 
 import DockListView from './views/DocListView';
+import LoginView from './views/LoginView';
 
 interface AppProps {
   isLoading: boolean;
@@ -23,33 +24,36 @@ interface AppProps {
 }
 const AppComponent: React.FC<AppProps> = (props) => {
 
-  const [privateKey, setPrivateKey] = useState<string>('');
-  const [registryUri, setRegstryUri] = useState<string>('');
+  if (!props.registryUri) {
+    return (
+      <LoginView />
+    )
+  }
 
   return (
-  <Router>
-  <IonPage id="home-page">
-    <IonHeader>
-      <IonToolbar>
-        <IonTitle>RFM</IonTitle>
-      </IonToolbar>
-    </IonHeader>
-    <IonContent>
-    
-    <IonRouterOutlet id="main">
-      <Route path="/doc/:uri?" render={(props) => (
-        <DockListView {...props}/>
-      )} />
-      <Route path="/" render={({ location }) => 
-          <Redirect to={{
-              pathname: '/doc',
-              state: { from: location },
-          }} />} exact />
-    </IonRouterOutlet>
-    
-  </IonContent>
-  </IonPage>
-  </Router>
+    <Router>
+      <IonPage id="home-page">
+        <IonHeader>
+          <IonToolbar>
+            <IonTitle>RFM</IonTitle>
+          </IonToolbar>
+        </IonHeader>
+        <IonContent>
+
+          <IonRouterOutlet id="main">
+            <Route path="/doc/:uri?" render={(props) => (
+              <DockListView {...props}/>
+            )} />
+            <Route path="/" render={({ location }) => 
+              <Redirect to={{
+                pathname: '/doc',
+                state: { from: location },
+              }} />} exact />
+          </IonRouterOutlet>
+        
+        </IonContent>
+      </IonPage>
+    </Router>
   );
 };
 

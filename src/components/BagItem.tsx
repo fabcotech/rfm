@@ -1,3 +1,5 @@
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import React from 'react';
 import {
   IonIcon,
@@ -14,13 +16,16 @@ import { document } from 'ionicons/icons';
 interface BagItemProps {
   bag: Bag;
   id: string;
+  loadBag: (bagId: string) => void;
 }
 
-const BagItem: React.FC<BagItemProps> = ({ bag, id }) => {
+const BagItemComponent: React.FC<BagItemProps> = ({ bag, loadBag, id }) => {
   const history = useHistory();
   return (
     <IonItem detail={false} button onClick={() => {
-      history.push("/doc/" + id);
+      loadBag(id)
+      console.log("/doc/show/" + id)
+      history.push("/doc/show/" + id);
     }}>
       <div className="IconContainer">
         <IonIcon icon={document} size="large"/>
@@ -29,15 +34,25 @@ const BagItem: React.FC<BagItemProps> = ({ bag, id }) => {
         <h2>
           {id}
         </h2>
-        <h4>
-          quantity {bag.quantity}
-        </h4>
-        <h4>
-          price {bag.price}
-        </h4>
       </IonLabel>
     </IonItem>
   );
 };
+
+const BagItem = connect(
+  undefined,
+  (dispatch: Dispatch) => {
+    return {
+      loadBag: (bagId: string) => {
+        dispatch({
+          type: 'LOAD_BAG_DATA',
+          payload: {
+            bagId: bagId,
+          }
+        })
+      }
+    }
+  }
+)(BagItemComponent);
 
 export default BagItem;

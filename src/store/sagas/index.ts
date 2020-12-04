@@ -1,9 +1,13 @@
 import { all } from 'redux-saga/effects';
 
-import { retrieveSaga } from './retrieve';
+import { loadSaga } from './load';
+import { loadBagDataSaga } from './loadBagData';
+import { uploadBagDataSaga } from './uploadBagData';
 
 export const sagas = function* rootSaga() {
   yield all([
-    retrieveSaga(),
+    loadSaga(),
+    loadBagDataSaga(),
+    uploadBagDataSaga()
   ])
 };
