@@ -38,7 +38,7 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ url }) => {
   return (
     <IonChip className="QRContainer">
         <canvas ref={qrcodecanvas} className="Image" />
-        <IonLabel>Scan to join</IonLabel>
+        <IonLabel>Scan to view</IonLabel>
     </IonChip>
   );
 };
