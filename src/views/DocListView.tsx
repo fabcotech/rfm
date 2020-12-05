@@ -1,13 +1,12 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { useState, useEffect } from 'react';
-import { useHistory, RouteComponentProps } from 'react-router';
+import React from 'react';
+import { useHistory } from 'react-router';
 
 import {
   IonLoading,
   IonContent,
   IonModal,
-  IonButton
 } from '@ionic/react';
 import { Bag, State } from '../store';
 import Horizontal from '../components/Horizontal';
@@ -44,7 +43,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
         </IonModal> : undefined
       }
       {
-        props.action == "list" ?
+        props.action === "list" ?
         <>
           <IonLoading isOpen={props.isLoading && props.action === "list"}></IonLoading>
           {

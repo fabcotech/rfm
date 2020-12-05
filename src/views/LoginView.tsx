@@ -10,7 +10,6 @@ import {
   IonButton
 } from '@ionic/react';
 import './LoginView.css';
-import { State } from '../store';
 
 interface LoginViewProps {
   init: (a: { registryUri: string, privateKey: string }) => void;

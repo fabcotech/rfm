@@ -37,7 +37,7 @@ const initialState: State = {
   readOnlyUrl: 'http://localhost:40403',
   validatorUrl: 'http://localhost:40403',
   nonce: undefined,
-  registryUri: '1hgw3dqkkwpocjhfgzqyhfzc8dbdoi5b4f5n6dphtyas4ga643your',
+  registryUri: 'phb1fx5ycutkxmqx3qbaep5dwgrc8an5an5qssr5xnsh1iworourka',
   privateKey: 'a2803d16030f83757a5043e5c0e28573685f6d8bf4e358bf1385d82bffa8e698',
   bags: {},
   bagsData: {},

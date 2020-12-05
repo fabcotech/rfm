@@ -22,7 +22,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
 
   useEffect(() => {
     props.loadBag(props.bagId);
-  }, []);
+  });
 
   const document = props.bagsData[props.bagId];
   return <>
@@ -56,6 +56,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
             {
               ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
               <img
+                alt={document.name}
                 src={`data:${document.mimeType};base64, ${document.data}`}
               ></img> :
               <IonIcon size="large" icon={documentIcon}/>
