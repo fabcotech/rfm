@@ -15,7 +15,7 @@ Issuer knows Alice's contract address
 (4) Alice  (encrypt with SECRET) [RChain] -> Final file
 
 
-##### RChain
+### RChain
 
 **Prequisites:**
 Alice deploys a rchain-token contract with Infinity of tokens in bag "0", those tokens are purchasable by anyone.
