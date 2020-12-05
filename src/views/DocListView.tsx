@@ -35,22 +35,12 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
         props.action === "show" ?
         <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
           <ModalDocument bagId={props.bagId as string}></ModalDocument>
-          <IonButton onClick={() => {
-            history.push("/doc/")
-          }}>
-              Close
-          </IonButton>
         </IonModal> : undefined
       }
       {
         props.action === "upload" ?
         <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
           <ModalUploadDocument></ModalUploadDocument>
-          <IonButton onClick={() => {
-            history.push("/doc/")
-          }}>
-              Close
-          </IonButton>
         </IonModal> : undefined
       }
       {
