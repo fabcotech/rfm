@@ -17,6 +17,8 @@ import {
 } from '@ionic/react';
 import './LoginView.scoped.css';
 
+import {ReactComponent as GhostLogo} from '../assets/ghost.svg';
+
 interface LoginViewProps {
   init: (a: { registryUri: string, privateKey: string }) => void;
 }
@@ -84,6 +86,7 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
         :
         <React.Fragment>
           <IonGrid>
+            <GhostLogo />
             <IonRow>
               <IonCol>
                 <IonLabel>You have no identity</IonLabel>
