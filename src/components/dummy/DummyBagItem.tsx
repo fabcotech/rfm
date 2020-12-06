@@ -6,7 +6,7 @@ import {
   IonSkeletonText
   } from '@ionic/react';
 
-import '../BagItem.css';
+import '../BagItem.scoped.css';
 
 import { document } from 'ionicons/icons';
 

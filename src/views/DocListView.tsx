@@ -7,6 +7,7 @@ import {
   IonLoading,
   IonContent,
   IonModal,
+  IonProgressBar
 } from '@ionic/react';
 import { Bag, State } from '../store';
 import Horizontal from '../components/Horizontal';
@@ -14,6 +15,10 @@ import BagItem from '../components/BagItem';
 import DummyBagItem from '../components/dummy/DummyBagItem';
 import ModalDocument from '../components/ModalDocument';
 import ModalUploadDocument from '../components/ModalUploadDocument';
+
+const renderLoading = () => {
+  return <IonProgressBar color="secondary" type="indeterminate"></IonProgressBar>
+};
 
 type TRouteParams = {
   uri: string; // since it route params
@@ -29,6 +34,11 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
 
   return (
     <IonContent>
+      {
+        props.isLoading && props.action === "list"
+        ? renderLoading()
+        : undefined
+      }
       <Horizontal />
       {
         props.action === "show" ?
@@ -45,7 +55,6 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
       {
         props.action === "list" ?
         <>
-          <IonLoading isOpen={props.isLoading && props.action === "list"}></IonLoading>
           {
             !props.isLoading ?
               Object.keys(props.bags).map(bagId => {

@@ -1,0 +1,7 @@
+.plt-ios ion-tab-bar {
+    padding-top: var(--ion-safe-area-top);
+}
+
+.plt-ios ion-header ion-toolbar.noSafeAreaPaddingTop {
+    padding-top: 0 !important;
+}

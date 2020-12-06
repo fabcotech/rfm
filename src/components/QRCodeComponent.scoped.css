@@ -4,7 +4,7 @@ ion-chip.QRContainer {
     height: auto;
     border-radius: 0.5em;
     padding: 0.3em;
-    background: #ffffff3d;
+    background: var(--ion-color-primary, --ion-color-primary) !important;
 }
   
 canvas.Image {

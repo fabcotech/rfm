@@ -1,0 +1,26 @@
+ion-slides {
+    height: 100%;
+}
+
+ion-button.ActionButton {
+    border: solid 1px var(  --ion-color-secondary);
+    border-radius: 1em;
+    --box-shadow:none;
+}
+
+@media (prefers-color-scheme: dark) {
+    ion-button.ActionButton {
+        color: white;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    ion-button.ActionButton {
+        color: black;
+    }
+}
+
+div.BottomBar {
+    position: fixed;
+    bottom: 0;
+}

@@ -6,7 +6,7 @@ import { document as documentIcon, cloudUpload } from 'ionicons/icons';
 
 import { useHistory, RouteComponentProps } from 'react-router';
 
-import './ModalUploadDocument.css';
+import './ModalUploadDocument.scoped.css';
 import { Bag, State, Document } from '../store';
 
 

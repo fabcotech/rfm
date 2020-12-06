@@ -7,7 +7,7 @@ import {
 } from '@ionic/react';
 
 import { useHistory } from 'react-router';
-import './Horizontal.css';
+import './Horizontal.scoped.css';
 import { State } from '../store';
 
 interface HorizontalProps {
@@ -20,13 +20,13 @@ const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
   const history = useHistory();
   return (
     <IonItem detail={false}>
-      <IonButton
+      <IonButton color="tertiary"
         onClick={() => {
           history.push("/doc/upload/");
         }}
       >Upload
       </IonButton>
-      <IonButton
+      <IonButton color="tertiary"
         onClick={() => {
           props.init({
             privateKey: props.privateKey,

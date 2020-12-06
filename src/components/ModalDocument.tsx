@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
-import {IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton } from '@ionic/react';
+import React, { useEffect, useState } from 'react';
+import {IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton, IonProgressBar } from '@ionic/react';
 import { State } from '../store';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { document as documentIcon } from 'ionicons/icons';
 import { useHistory } from 'react-router';
+import { Document, Page, pdfjs  } from 'react-pdf';
 
-//import './ModalDocument.css';
+import './ModalDocument.scoped.css';
 
 import QRCodeComponent from './QRCodeComponent';
 
@@ -19,10 +20,17 @@ interface ModalDocumentProps {
 
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocumentProps) => {
   const history = useHistory();
+  const pdfcontent64 = "";
+  const [page, setPage] = useState<number>();
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
   useEffect(() => {
     props.loadBag(props.bagId);
   });
+
+  const renderLoading = () => {
+    return <IonProgressBar color="secondary" type="indeterminate"></IonProgressBar>
+  };
 
   const document = props.bagsData[props.bagId];
   return <>
@@ -39,18 +47,27 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
         <IonIcon icon={documentIcon} slot="start" size="large"></IonIcon>
       </IonToolbar>
     </IonHeader>
-    <IonContent className="ion-padding">
-      <QRCodeComponent url="http://localhost:3000" />
+    <IonContent>
+    {
+              document ?
+              <Document file={"data:application/pdf;base64," + pdfcontent64} loading={renderLoading}>
+
+                <Page pageNumber={page} pageIndex={0} />
+              </Document> :<React.Fragment></React.Fragment>
+            }
       {
         typeof document === 'undefined' ?
         <IonLoading isOpen={true}></IonLoading> : undefined
       }
       {
         document === null ?
-        <span>No document attached</span> : undefined
+        <span>No document attached</span> :                
+                    <div className="qrCodeContainer">
+                      <QRCodeComponent url="http://localhost:3000" />
+                    </div>
       }
       {
-        document ?
+        document?
         <div className="document">
           <div className="left">
             {
@@ -58,8 +75,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
               <img
                 alt={document.name}
                 src={`data:${document.mimeType};base64, ${document.data}`}
-              ></img> :
-              <IonIcon size="large" icon={documentIcon}/>
+              ></img> :<React.Fragment></React.Fragment>
             }
           </div>
           <div className="right">
