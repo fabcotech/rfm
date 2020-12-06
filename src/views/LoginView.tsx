@@ -28,8 +28,10 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
 
   const [devLogin, setDevLogin] = useState(false);
 
+  const slides = React.useRef(null);
+
   const slideOpts: Record<string, unknown> = {
-    initialSlide: 2,
+    initialSlide: 0,
     speed: 400
   };
 
@@ -37,7 +39,10 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
     <IonContent>
       <IonSlides
       class="Instructions"
-      options={slideOpts}>
+      options={slideOpts}
+      pager={true}
+      onIonSlideDidChange={(event: any)=> console.info(event)}
+      >
         <IonSlide>
           {
           devLogin
@@ -111,6 +116,9 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
             <IonToggle color="secondary" checked={devLogin} onIonChange={e => setDevLogin(e.detail.checked)} />
           </IonItem>
           </div>
+        </IonSlide>
+        <IonSlide>
+          Slide2
         </IonSlide>
       </IonSlides>
     </IonContent>
