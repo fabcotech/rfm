@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^2.4.4",
     "@capacitor/core": "2.4.4",
     "@craco/craco": "^5.9.0",
     "@ionic/react": "^5.0.7",
@@ -23,6 +24,7 @@
     "@types/uuid": "^8.3.0",
     "bip39": "^3.0.3",
     "blakejs": "^1.1.0",
+    "capacitor-file-selector": "^0.0.4",
     "craco-plugin-scoped-css": "^1.1.0",
     "ethereumjs-wallet": "^1.0.1",
     "ionicons": "^5.2.3",

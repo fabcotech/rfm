@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { Suspense }  from 'react';
+import React, { Suspense, useEffect }  from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import {
   IonContent,
@@ -14,6 +14,9 @@ import {
 import './App.css';
 import { Bag, State } from './store';
 
+import { Plugins } from "@capacitor/core";
+const { Device } = Plugins;
+
 const LoginView = React.lazy(() => import('./views/LoginView'));
 const DockListView = React.lazy(() => import('./views/DocListView'));
 
@@ -22,8 +25,16 @@ interface AppProps {
   registryUri: undefined | string;
   bags: { [id: string]: Bag }
   init: (a: { registryUri: string, privateKey: string }) => void;
+  setPlatform: (platform: string) => void;
 }
 const AppComponent: React.FC<AppProps> = (props) => {
+
+  useEffect(() => {
+    Device.getInfo().then(info => {
+      console.log(info);
+      props.setPlatform(info.platform);
+    });
+  }, []);
 
   if (!props.registryUri) {
     return (
@@ -86,6 +97,14 @@ export const App = connect((state: State) => {
         payload: {
           privateKey: a.privateKey,
           registryUri: a.registryUri,
+        }
+      })
+    },
+    setPlatform: (platform: string) => {
+      dispatch({
+        type: 'SET_PLATFORM',
+        payload: {
+          platform: platform
         }
       })
     }

@@ -20,6 +20,7 @@ export interface State {
 
   isLoading: boolean;
   searchText: string;
+  platform: string;
 }
 
 export interface Bag {
@@ -42,7 +43,9 @@ const initialState: State = {
   privateKey: 'a2803d16030f83757a5043e5c0e28573685f6d8bf4e358bf1385d82bffa8e698',
   bags: {},
   bagsData: {},
-  isLoading: false
+  isLoading: false,
+  searchText: "",
+  platform: ""
 };
 
 const reducer = (state = initialState, action: { type: string; payload: any }): State => {
@@ -80,6 +83,12 @@ const reducer = (state = initialState, action: { type: string; payload: any }): 
           ...state.bagsData,
           [action.payload.bagId]: action.payload.document,
         },
+      };
+    }
+    case "SET_PLATFORM": {
+      return {
+        ...state,
+        platform: action.payload.platform,
       };
     }
     case "SET_SEARCH_TEXT": {
