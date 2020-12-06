@@ -19,6 +19,7 @@ export interface State {
   bagsData: { [bagId: string]: Document };
 
   isLoading: boolean;
+  searchText: string;
 }
 
 export interface Bag {
@@ -79,6 +80,12 @@ const reducer = (state = initialState, action: { type: string; payload: any }): 
           ...state.bagsData,
           [action.payload.bagId]: action.payload.document,
         },
+      };
+    }
+    case "SET_SEARCH_TEXT": {
+      return {
+        ...state,
+        searchText: action.payload.searchText,
       };
     }
     case "UPLOAD_BAG_DATA_COMPLETED": {

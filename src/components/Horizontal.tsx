@@ -1,10 +1,13 @@
 import { connect } from 'react-redux';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dispatch } from 'redux';
 import {
-  IonButton,
   IonItem,
+  IonRefresher,
+  IonRefresherContent,
+  IonSearchbar
 } from '@ionic/react';
+import { RefresherEventDetail } from '@ionic/core';
 
 import { useHistory } from 'react-router';
 import './Horizontal.scoped.css';
@@ -13,29 +16,37 @@ import { State } from '../store';
 interface HorizontalProps {
   privateKey: string;
   registryUri: string;
+  searchText: string;
   init: (a: { privateKey: string; registryUri: string}) => void;
+  setSearchText: (searchText: string) => void;
 }
 
 const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
-  const history = useHistory();
+  const doFetch = () => {
+    props.init({
+      privateKey: props.privateKey,
+      registryUri: props.registryUri,
+    })
+  }
+
+  useEffect(() => {
+    doFetch();
+  }, []);
+
+  const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+    doFetch();
+    event.detail.complete();
+  }
+
   return (
-    <IonItem detail={false}>
-      <IonButton color="tertiary"
-        onClick={() => {
-          history.push("/doc/upload/");
-        }}
-      >Upload
-      </IonButton>
-      <IonButton color="tertiary"
-        onClick={() => {
-          props.init({
-            privateKey: props.privateKey,
-            registryUri: props.registryUri,
-          })
-        }}
-      >Reload
-      </IonButton>
+  <React.Fragment>
+    <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
+      <IonRefresherContent></IonRefresherContent>
+    </IonRefresher>
+    <IonItem detail={false} no-padding lines="none">
+      <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
     </IonItem>
+    </React.Fragment>
   );
 };
 
@@ -44,6 +55,7 @@ const Horizontal = connect(
     return {
       privateKey: state.privateKey as string,
       registryUri: state.registryUri as string,
+      searchText: state.searchText as string
     }
   },
   (dispatch: Dispatch) => {
@@ -52,6 +64,13 @@ const Horizontal = connect(
         dispatch({
           type: 'INIT',
           payload: a,
+        })
+      },
+
+      setSearchText: (searchText: string) => {
+        dispatch({
+          type: 'SET_SEARCH_TEXT',
+          payload: searchText,
         })
       }
     }
