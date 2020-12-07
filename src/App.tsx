@@ -15,6 +15,10 @@ import './App.css';
 import { Bag, State } from './store';
 
 import { Plugins } from "@capacitor/core";
+
+import {ReactComponent as RChainLogo} from './assets/rchain.svg';
+import {ReactComponent as Waves} from './assets/wave.svg';
+
 const { Device } = Plugins;
 
 const LoginView = React.lazy(() => import('./views/LoginView'));
@@ -47,13 +51,14 @@ const AppComponent: React.FC<AppProps> = (props) => {
   return (
     <Router>
       <IonPage id="home-page">
-        <IonHeader no-border>
+        <IonHeader no-border class="ion-no-border" className="RoundedHeader">
           <IonToolbar color="primary" class="noSafeAreaPaddingTop">
-            <IonTitle>RFM</IonTitle>
+            <IonTitle>RChain File Manager</IonTitle>
           </IonToolbar>
+          <Waves className="Waves"/>
         </IonHeader>
         <IonContent>
-
+          <RChainLogo className="BackgroundLogo"/>
           <IonRouterOutlet id="main">
             <Route exact path="/doc/show/:bagId?" render={(props) => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>

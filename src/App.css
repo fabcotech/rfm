@@ -9,3 +9,33 @@
 .swiper-pagination-bullet-active {
     background: var(--ion-color-secondary);
 }
+
+
+.modal-wrapper.sc-ion-modal-md {
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    display: block;
+  }
+
+  .BackgroundLogo {
+      opacity: 0.05;
+      z-index: 1;
+      position: absolute;
+      pointer-events: none;
+      overflow-y: none;
+  }
+
+.RoundedHeader {
+    position: relative;
+    margin-bottom: 1.5em;
+}
+
+.Waves {
+    position: fixed;
+    top: auto;
+    width: 100%;
+    pointer-events: none;
+    z-index: 1;
+}

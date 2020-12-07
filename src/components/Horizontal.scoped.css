@@ -1,5 +1,7 @@
 ion-searchbar {
-    padding:0;
-    margin: 0;
     --box-shadow: none !important;
+}
+
+.SearchBarContainer {
+    margin-top: 1em;
 }

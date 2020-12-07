@@ -20,9 +20,6 @@ const DummyBagItem: React.FC<DummyBagItemProps> = ({ id }) => {
         <IonIcon icon={document} size="large"/>
       </div>
       <IonLabel className="ion-text-wrap">
-        <h2>
-            <IonSkeletonText animated style={{ width: '30%' }}></IonSkeletonText>
-        </h2>
         <h4>
             <IonSkeletonText animated style={{ width: '80%' }}></IonSkeletonText>
         </h4>

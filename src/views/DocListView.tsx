@@ -47,9 +47,11 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
           </IonFabButton>
         </IonFab>
         {
+        /*
         props.isLoading && props.action === "list"
         ? renderLoading()
         : undefined
+        */
       }
       <Horizontal />
       {

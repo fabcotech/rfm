@@ -25,3 +25,7 @@ div.BottomBar {
     top: 0;
     width: 100%;
 }
+
+.BG {
+    opacity: 0.1;
+}

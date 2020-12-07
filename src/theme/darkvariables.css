@@ -86,6 +86,8 @@ http://ionicframework.com/docs/theming/ */
     --ion-text-color: #ffffff;
     --ion-text-color-rgb: 255,255,255;
 
+    --ion-border-color:  #4f627e;
+
     --ion-color-step-50: #0d0d0d;
     --ion-color-step-100: #1a1a1a;
     --ion-color-step-150: #262626;
@@ -126,7 +128,7 @@ http://ionicframework.com/docs/theming/ */
     --ion-text-color: #ffffff;
     --ion-text-color-rgb: 255,255,255;
 
-    --ion-border-color: #222222;
+    --ion-border-color:  #4f627e;
 
     --ion-color-step-50: #1e1e1e;
     --ion-color-step-100: #2a2a2a;

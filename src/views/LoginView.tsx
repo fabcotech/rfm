@@ -18,6 +18,7 @@ import {
 import './LoginView.scoped.css';
 
 import {ReactComponent as GhostLogo} from '../assets/ghost.svg';
+import {ReactComponent as RChainLogo} from '../assets/rchain.svg';
 
 interface LoginViewProps {
   init: (a: { registryUri: string, privateKey: string }) => void;
@@ -118,7 +119,7 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
           </div>
         </IonSlide>
         <IonSlide>
-          Slide2
+          <RChainLogo className="BG"/>
         </IonSlide>
       </IonSlides>
     </IonContent>

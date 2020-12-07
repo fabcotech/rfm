@@ -43,7 +43,7 @@ const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
     <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
       <IonRefresherContent></IonRefresherContent>
     </IonRefresher>
-    <IonItem detail={false} no-padding lines="none">
+    <IonItem detail={false} no-padding lines="none" className="SearchBarContainer">
       <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
     </IonItem>
     </React.Fragment>
