@@ -1,18 +1,18 @@
 import { createStore, applyMiddleware } from "redux";
 import createSagaMiddleware from "redux-saga";
-import { all } from 'redux-saga/effects';
+import { all } from "redux-saga/effects";
 
-import { sagas } from './sagas/';
+import { sagas } from "./sagas/";
 
 export interface State {
   readOnlyUrl: string;
   validatorUrl: string;
 
   // rchain-token contract
-  nonce: undefined | string;
-  registryUri: undefined | string;
+  nonce: undefined | string;
+  registryUri: undefined | string;
 
-  privateKey: undefined | string;
+  privateKey: undefined | string;
 
   // rchain-token bags and data
   bags: { [bagId: string]: Bag };
@@ -26,7 +26,7 @@ export interface State {
 export interface Bag {
   n: string;
   quantity: number;
-  price: undefined | number;
+  price: undefined | number;
   publicKey: string;
 }
 export interface Document {
@@ -36,8 +36,8 @@ export interface Document {
 }
 
 const initialState: State = {
-  readOnlyUrl: 'http://localhost:40403',
-  validatorUrl: 'http://localhost:40403',
+  readOnlyUrl: "http://localhost:40403",
+  validatorUrl: "http://localhost:40403",
   nonce: undefined,
   registryUri: undefined,
   privateKey: undefined,
@@ -45,10 +45,13 @@ const initialState: State = {
   bagsData: {},
   isLoading: false,
   searchText: "",
-  platform: ""
+  platform: "",
 };
 
-const reducer = (state = initialState, action: { type: string; payload: any }): State => {
+const reducer = (
+  state = initialState,
+  action: { type: string; payload: any }
+): State => {
   console.log(action);
   switch (action.type) {
     case "INIT": {
@@ -79,7 +82,7 @@ const reducer = (state = initialState, action: { type: string; payload: any }): 
     case "SAVE_BAG_DATA_COMPLETED": {
       return {
         ...state,
-        bagsData:{
+        bagsData: {
           ...state.bagsData,
           [action.payload.bagId]: action.payload.document,
         },
@@ -116,10 +119,10 @@ const sagasFunction = function* rootSaga() {
   try {
     yield all([sagas()]);
   } catch (err) {
-    console.error('An error occured in sagas');
+    console.error("An error occured in sagas");
     console.log(err);
   }
-}
+};
 
 export const store = createStore(reducer, applyMiddleware(...middlewares));
 

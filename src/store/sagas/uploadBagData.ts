@@ -43,7 +43,10 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     newNonce: newNonce,
   }
 
+  console.log(payload);
   const ba = rchainToolkit.utils.toByteArray(payload);
+  console.log(ba)
+  console.log(state.privateKey);
   const signature = generateSignature(ba, state.privateKey as string);
 
   const term = createTokensTerm(
