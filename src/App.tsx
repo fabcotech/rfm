@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React  from 'react';
+import React, { Suspense, useEffect }  from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import {
   IonContent,
@@ -9,46 +9,71 @@ import {
   IonTitle,
   IonToolbar,
   IonRouterOutlet,
+  IonLoading
 } from '@ionic/react';
 import './App.css';
 import { Bag, State } from './store';
 
-import DockListView from './views/DocListView';
-import LoginView from './views/LoginView';
+import { Plugins } from "@capacitor/core";
+
+import {ReactComponent as RChainLogo} from './assets/rchain.svg';
+import {ReactComponent as Waves} from './assets/wave.svg';
+
+const { Device } = Plugins;
+
+const LoginView = React.lazy(() => import('./views/LoginView'));
+const DockListView = React.lazy(() => import('./views/DocListView'));
 
 interface AppProps {
   isLoading: boolean;
   registryUri: undefined | string;
   bags: { [id: string]: Bag }
   init: (a: { registryUri: string, privateKey: string }) => void;
+  setPlatform: (platform: string) => void;
 }
 const AppComponent: React.FC<AppProps> = (props) => {
 
+  useEffect(() => {
+    Device.getInfo().then(info => {
+      console.log(info);
+      props.setPlatform(info.platform);
+    });
+  }, []);
+
   if (!props.registryUri) {
     return (
-      <LoginView />
+      <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+        <LoginView />
+      </Suspense>
     )
   }
 
   return (
     <Router>
       <IonPage id="home-page">
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>RFM</IonTitle>
+        <IonHeader no-border class="ion-no-border" className="RoundedHeader">
+          <IonToolbar color="primary" class="noSafeAreaPaddingTop">
+            <IonTitle>RChain File Manager</IonTitle>
           </IonToolbar>
+          <Waves className="Waves"/>
         </IonHeader>
         <IonContent>
-
+          <RChainLogo className="BackgroundLogo"/>
           <IonRouterOutlet id="main">
-            <Route exact path="/doc/show/:bagId?" render={(props) => {
-              return <DockListView bagId={props.match.params.bagId} action="show" />
-            }} />
+            <Route exact path="/doc/show/:bagId?" render={(props) => (
+              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                <DockListView bagId={props.match.params.bagId} action="show" />
+              </Suspense>
+            )} />
             <Route exact path="/doc/" render={(props) => (
-              <DockListView action="list" />
+              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                <DockListView action="list" />
+              </Suspense>
             )} />
             <Route exact path="/doc/upload" render={(props) => (
-              <DockListView action="upload" />
+              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                <DockListView action="upload" />
+              </Suspense>
             )} />
             <Route path="/" render={({ location }) => 
               <Redirect to={{
@@ -77,6 +102,14 @@ export const App = connect((state: State) => {
         payload: {
           privateKey: a.privateKey,
           registryUri: a.registryUri,
+        }
+      })
+    },
+    setPlatform: (platform: string) => {
+      dispatch({
+        type: 'SET_PLATFORM',
+        payload: {
+          platform: platform
         }
       })
     }

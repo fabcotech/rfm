@@ -4,13 +4,16 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption
   } from '@ionic/react';
 
 import { useHistory } from 'react-router';
 import { Bag } from '../store';
-import './BagItem.css';
+import './BagItem.scoped.css';
 
-import { document as documentIcon } from 'ionicons/icons';
+import { document as documentIcon, trash, create } from 'ionicons/icons';
 
 interface BagItemProps {
   bag: Bag;
@@ -20,18 +23,24 @@ interface BagItemProps {
 const BagItemComponent: React.FC<BagItemProps> = ({ bag, id }) => {
   const history = useHistory();
   return (
-    <IonItem detail={false} button onClick={() => {
-      history.push("/doc/show/" + id);
-    }}>
-      <div className="IconContainer">
-        <IonIcon icon={documentIcon} size="large"/>
-      </div>
-      <IonLabel className="ion-text-wrap">
-        <h2>
-          {id}
-        </h2>
-      </IonLabel>
-    </IonItem>
+    <IonItemSliding>
+      <IonItemOptions side="end">
+        <IonItemOption color="secondary" onClick={() => console.log('favorite clicked')}><IonIcon icon={create} size="large"></IonIcon></IonItemOption>
+        <IonItemOption color="danger" onClick={() => console.log('share clicked')}><IonIcon icon={trash} size="large"></IonIcon></IonItemOption>
+      </IonItemOptions>
+      <IonItem detail={false} button onClick={() => {
+        history.push("/doc/show/" + id);
+      }}>
+        <div className="IconContainer">
+          <IonIcon icon={documentIcon} size="large"/>
+        </div>
+        <IonLabel className="ion-text-wrap">
+          <h2>
+            {id}
+          </h2>
+        </IonLabel>
+      </IonItem>
+    </IonItemSliding>
   );
 };
 

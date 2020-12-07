@@ -6,8 +6,11 @@ import { document as documentIcon, cloudUpload } from 'ionicons/icons';
 
 import { useHistory, RouteComponentProps } from 'react-router';
 
-import './ModalUploadDocument.css';
+import './ModalUploadDocument.scoped.css';
 import { Bag, State, Document } from '../store';
+
+import { Plugins } from '@capacitor/core'; 
+const { FileSelector } = Plugins; 
 
 
 //Instead of deprecated withRouter
@@ -22,11 +25,13 @@ export const withHistory = (Component: any) => {
 interface ModalUploadDocumentProps extends RouteComponentProps {
   bags: { [bagId: string]: Bag };
   upload: (bagId: string, document: Document) => void
+  platform: string,
 }
 interface ModalUploadDocumentState {
   bagId: string;
   dropErrors: string[];
   document: undefined | Document;
+  platform: string,
 }
 class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentProps, ModalUploadDocumentState> {
   constructor(props: ModalUploadDocumentProps) {
@@ -34,10 +39,47 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
     this.state = {
       document: undefined,
       bagId: '',
-      dropErrors: []
+      dropErrors: [],
+      platform: ""
     }
   }
   dropEl: HTMLTextAreaElement | undefined = undefined;
+
+  blobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+        resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+  });
+
+  nativeFilePicker = async () => {
+    const that = this;
+    let selectedFile = await FileSelector.fileSelector({ 
+      multiple_selection: false, 
+      ext: [".jpg",".png",".pdf",".jpeg"]
+    })
+    
+    const paths = JSON.parse(selectedFile.paths)
+    const names = JSON.parse(selectedFile.original_names) 
+    const filePath = paths[0];
+    const fileName = names[0];
+    
+    const fileResponse = await fetch(filePath);
+    const fileBlob = await fileResponse.blob();
+
+    const asbase: string = await this.blobToBase64(fileBlob) as string;
+    
+    that.setState({
+      document: {
+        name: fileName,
+        mimeType: fileBlob.type,
+        data: asbase.split(',')[1],
+      },
+    });
+
+  }
 
   saveRef = (el: HTMLTextAreaElement) => {
     this.dropEl = el;
@@ -122,10 +164,22 @@ class ModalUploadDocumentComponent extends React.Component<ModalUploadDocumentPr
             }
           ></IonInput>
         </IonItem>
+        {
+        this.props.platform === "web" ?
         <div className={`drop-area ${!!this.state.document ? 'hide' : ''}`}>
           <textarea ref={this.saveRef} />
           <span><IonIcon icon={documentIcon} size="large"/> Drop your file</span>
         </div>
+        : undefined
+        }
+        {
+        this.props.platform === "ios" || this.props.platform === "android" ?
+        <IonButton
+        onClick={() => {
+          this.nativeFilePicker();
+        }}>Pick a document</IonButton>
+        : undefined
+        }
         {
           this.state.document ?
           <div className="document">
@@ -168,6 +222,7 @@ const ModalUploadDocument = connect(
     return {
       bags: state.bags,
       bagsData: state.bagsData,
+      platform: state.platform,
     }
   },
   (dispatch: Dispatch) => {

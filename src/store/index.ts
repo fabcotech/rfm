@@ -19,6 +19,8 @@ export interface State {
   bagsData: { [bagId: string]: Document };
 
   isLoading: boolean;
+  searchText: string;
+  platform: string;
 }
 
 export interface Bag {
@@ -37,11 +39,13 @@ const initialState: State = {
   readOnlyUrl: 'http://localhost:40403',
   validatorUrl: 'http://localhost:40403',
   nonce: undefined,
-  registryUri: 'phb1fx5ycutkxmqx3qbaep5dwgrc8an5an5qssr5xnsh1iworourka',
-  privateKey: 'a2803d16030f83757a5043e5c0e28573685f6d8bf4e358bf1385d82bffa8e698',
+  registryUri: undefined,
+  privateKey: undefined,
   bags: {},
   bagsData: {},
-  isLoading: false
+  isLoading: false,
+  searchText: "",
+  platform: ""
 };
 
 const reducer = (state = initialState, action: { type: string; payload: any }): State => {
@@ -79,6 +83,18 @@ const reducer = (state = initialState, action: { type: string; payload: any }): 
           ...state.bagsData,
           [action.payload.bagId]: action.payload.document,
         },
+      };
+    }
+    case "SET_PLATFORM": {
+      return {
+        ...state,
+        platform: action.payload.platform,
+      };
+    }
+    case "SET_SEARCH_TEXT": {
+      return {
+        ...state,
+        searchText: action.payload.searchText,
       };
     }
     case "UPLOAD_BAG_DATA_COMPLETED": {

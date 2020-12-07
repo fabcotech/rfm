@@ -19,3 +19,10 @@
     grid-column: 2;
     color: #bbb;
   }
+
+  .qrCodeContainer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 0.5em;
+  }

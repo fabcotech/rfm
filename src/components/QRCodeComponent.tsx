@@ -6,7 +6,7 @@ import {
 
 import { QRCodeRenderersOptions, toCanvas } from "qrcode";
 
-import './QRCodeComponent.css';
+import './QRCodeComponent.scoped.css';
 
 interface QRCodeComponentProps {
     url:string
@@ -19,8 +19,8 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ url }) => {
     if (url) {
         const opts = {
             errorCorrectionLevel: "H",
-            width: 220,
-            height: 220,
+            width: 100,
+            height: 100,
             margin: 1
           } as QRCodeRenderersOptions;
     
@@ -36,9 +36,9 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ url }) => {
   }, [url]);
   
   return (
-    <IonChip className="QRContainer">
+    <IonChip className="QRContainer" color="tertiary">
         <canvas ref={qrcodecanvas} className="Image" />
-        <IonLabel>Scan to view</IonLabel>
+        <IonLabel color="light">Scan to view</IonLabel>
     </IonChip>
   );
 };
