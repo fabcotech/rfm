@@ -14,17 +14,16 @@ import {
   IonButton,
 } from "@ionic/react";
 import { document as documentIcon, cloudUpload } from "ionicons/icons";
-
+import { Plugins } from "@capacitor/core";
 import { useHistory, RouteComponentProps } from "react-router";
 
 import generateSignature from "../utils/generateSignature";
 import generateSignatureFromHash from "../utils/generateSignatureFromHash";
-
-import { Plugins } from "@capacitor/core";
-const { FileSelector } = Plugins;
-
-import "./ModalUploadDocument.css";
 import { Bag, State, Document } from "../store";
+
+import "./ModalUploadDocument.scoped.css";
+
+const { FileSelector } = Plugins;
 
 const { blake2b } = require("blakejs");
 
