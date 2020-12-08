@@ -73,7 +73,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
           {
             !props.isLoading ?
               Object.keys(props.bags).filter(bagId =>  { return true } ).map(bagId => {
-                return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
+                return <BagItem key={bagId} registryUri={props.registryUri} id={bagId} bag={props.bags[bagId]} />
               })
               :
               [...Array(10)].map((x, i) =>
