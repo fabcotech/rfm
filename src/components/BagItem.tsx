@@ -53,7 +53,11 @@ const BagItemComponent: React.FC<BagItemProps> = ({
         }}
       >
         <div className="IconContainer">
+<<<<<<< HEAD
           <IonIcon icon={documentIcon} size="large" />
+=======
+          <IonIcon icon={documentIcon} color="secondary" size="large"/>
+>>>>>>> Added qr code scanner, yarn.lock
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>{id}</h2>

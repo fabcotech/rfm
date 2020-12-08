@@ -17,7 +17,7 @@ const DummyBagItem: React.FC<DummyBagItemProps> = ({ id }) => {
   return (
     <IonItem detail={false}>
       <div className="IconContainer">
-        <IonIcon icon={document} size="large"/>
+        <IonIcon icon={document} size="large" color="secondary"/>
       </div>
       <IonLabel className="ion-text-wrap">
         <h4>

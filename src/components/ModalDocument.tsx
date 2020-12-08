@@ -68,6 +68,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
               }}
             >
               Close
+<<<<<<< HEAD
             </IonButton>
           </IonButtons>
           <IonIcon icon={documentIcon} slot="start" size="large" />
@@ -98,6 +99,43 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                 props.bagId
               }`}
             />
+=======
+          </IonButton>
+        </IonButtons>
+        <IonIcon icon={documentIcon} slot="start" size="large"></IonIcon>
+      </IonToolbar>
+    </IonHeader>
+    <IonContent>
+    {
+              document ?
+              <Document file={"data:application/pdf;base64," + document.data} loading={renderLoading}>
+
+                <Page pageNumber={page} pageIndex={0} />
+              </Document> :<React.Fragment></React.Fragment>
+            }
+      {
+        typeof document === 'undefined' ?
+        <IonLoading isOpen={true}></IonLoading> : undefined
+      }
+      {
+        document === null ?
+        <span>No document attached</span> :                
+                    <div className="qrCodeContainer">
+                      <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
+                    </div>
+      }
+      {
+        document?
+        <div className="document">
+          <div className="left">
+            {
+              ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
+              <img
+                alt={document.name}
+                src={`data:${document.mimeType};base64, ${document.data}`}
+              ></img> :<React.Fragment></React.Fragment>
+            }
+>>>>>>> Added qr code scanner, yarn.lock
           </div>
         )}
         {document ? (

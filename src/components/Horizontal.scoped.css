@@ -5,3 +5,11 @@ ion-searchbar {
 .SearchBarContainer {
     margin-top: 1em;
 }
+
+ion-button.AddButton {
+    border: solid 1px var(  --ion-color-secondary);
+    border-radius: 100%;
+    --box-shadow:none;
+    color: var(--ion-color-secondary);
+    margin: auto;
+}
