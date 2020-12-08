@@ -33,6 +33,7 @@ export interface Document {
   name: string;
   mimeType: string;
   data: string;
+  signatures: Array<string>;
 }
 
 const initialState: State = {

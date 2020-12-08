@@ -22,6 +22,7 @@ import generateSignatureFromHash from "../utils/generateSignatureFromHash";
 import { Bag, State, Document } from "../store";
 
 import "./ModalUploadDocument.scoped.css";
+import replacer from '../utils/replacer';
 
 const { FileSelector } = Plugins;
 
@@ -95,6 +96,7 @@ class ModalUploadDocumentComponent extends React.Component<
         name: fileName,
         mimeType: fileBlob.type,
         data: asbase.split(",")[1],
+        signatures: []
       },
     });
   };
@@ -142,6 +144,7 @@ class ModalUploadDocumentComponent extends React.Component<
             name: file.name,
             mimeType: file.type,
             data: r.result.split(",")[1],
+            signatures: []
           },
         });
       };
@@ -157,13 +160,13 @@ class ModalUploadDocumentComponent extends React.Component<
       console.log("signature");
       const s = generateSignature(
         new Uint8Array(
-          Buffer.from(JSON.stringify(this.state.document), "utf8")
+          Buffer.from(JSON.stringify(this.state.document, replacer), "utf8")
         ),
         this.props.privateKey
       );
       console.log(s);
       const bufferToSign = Buffer.from(
-        JSON.stringify(this.state.document),
+        JSON.stringify(this.state.document, replacer),
         "utf8"
       );
       const uInt8Array = new Uint8Array(bufferToSign);
