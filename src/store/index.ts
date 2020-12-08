@@ -37,8 +37,8 @@ export interface Document {
 }
 
 const initialState: State = {
-  readOnlyUrl: "http://localhost:40403",
-  validatorUrl: "http://localhost:40403",
+  readOnlyUrl: "https://observer.testnet.rchain.coop",
+  validatorUrl: "https://node2.testnet.rchain-dev.tk",
   nonce: undefined,
   registryUri: undefined,
   privateKey: undefined,
@@ -85,7 +85,8 @@ const reducer = (
         ...state,
         bagsData: {
           ...state.bagsData,
-          [action.payload.registryUri + "/" + action.payload.bagId]: action.payload.document,
+          [action.payload.registryUri + "/" + action.payload.bagId]: action
+            .payload.document,
         },
       };
     }

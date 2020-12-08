@@ -30,7 +30,7 @@
     "ionicons": "^5.2.3",
     "pako": "^2.0.2",
     "qrcode": "^1.4.4",
-    "rchain-token-files": "fabcotech/rchain-token#301951dca1cf8a949f88452455f1b2154031609c",
+    "rchain-token-files": "fabcotech/rchain-token#aaf8df2b9715608f307647989f5f8f3e24565bae",
     "rchain-toolkit": "^0.2.8",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
