@@ -29,6 +29,7 @@ type TRouteParams = {
 }
 interface DockListViewProps {
   action: 'show' | 'list' | 'upload';
+  registryUri: string,
   bagId?: string;
   isLoading: boolean;
   bags: { [id: string]: Bag };
@@ -57,7 +58,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
       {
         props.action === "show" ?
         <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
-          <ModalDocument bagId={props.bagId as string}></ModalDocument>
+          <ModalDocument registryUri={props.registryUri as string} bagId={props.bagId as string}></ModalDocument>
         </IonModal> : undefined
       }
       {

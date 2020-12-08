@@ -11,7 +11,7 @@ const {
 const loadBagData = function* (action: { type: string; payload: any}) {
   console.log('load-bag-data', action.payload);
   const state: State = store.getState();
-  if (state.bagsData[action.payload.bagId]) {
+  if (state.bagsData[action.payload.registryUri + "/" + action.payload.bagId]) {
     return true;
   }
   yield put(
@@ -21,7 +21,7 @@ const loadBagData = function* (action: { type: string; payload: any}) {
     }
   );
 
-  const term = readBagOrTokenDataTerm(state.registryUri, 'bags', action.payload.bagId);
+  const term = readBagOrTokenDataTerm(action.payload.registryUri, 'bags', action.payload.bagId);
   const ed = yield rchainToolkit.http.exploreDeploy(
     state.readOnlyUrl,
     {
@@ -41,6 +41,7 @@ const loadBagData = function* (action: { type: string; payload: any}) {
         type: "SAVE_BAG_DATA_COMPLETED",
         payload: {
           bagId: action.payload.bagId,
+          registryUri: action.payload.registryUri,
           document: fileAsJson,
         }
       }
@@ -52,6 +53,7 @@ const loadBagData = function* (action: { type: string; payload: any}) {
         type: "SAVE_BAG_DATA_COMPLETED",
         payload: {
           bagId: action.payload.bagId,
+          registryUri: action.payload.registryUri,
           document: null,
         }
       }

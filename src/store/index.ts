@@ -16,7 +16,7 @@ export interface State {
 
   // rchain-token bags and data
   bags: { [bagId: string]: Bag };
-  bagsData: { [bagId: string]: Document };
+  bagsData: { [bagAddr: string]: Document };
 
   isLoading: boolean;
   searchText: string;
@@ -85,7 +85,7 @@ const reducer = (
         ...state,
         bagsData: {
           ...state.bagsData,
-          [action.payload.bagId]: action.payload.document,
+          [action.payload.registryUri + "/" + action.payload.bagId]: action.payload.document,
         },
       };
     }
