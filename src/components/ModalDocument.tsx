@@ -51,7 +51,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
     <IonContent>
     {
               document ?
-              <Document file={"data:application/pdf;base64," + pdfcontent64} loading={renderLoading}>
+              <Document file={"data:application/pdf;base64," + document.data} loading={renderLoading}>
 
                 <Page pageNumber={page} pageIndex={0} />
               </Document> :<React.Fragment></React.Fragment>

@@ -18,7 +18,19 @@ import DummyBagItem from '../components/dummy/DummyBagItem';
 import ModalDocument from '../components/ModalDocument';
 import ModalUploadDocument from '../components/ModalUploadDocument';
 
-import { add } from 'ionicons/icons';
+import { qrCode } from 'ionicons/icons';
+
+declare global {
+  interface Window {
+    cordova: {
+      plugins: {
+        barcodeScanner: {
+          scan: (a: unknown, b: unknown, c: unknown) => unknown;
+        };
+      };
+    };
+  }
+}
 
 const renderLoading = () => {
   return <IonProgressBar color="secondary" type="indeterminate"></IonProgressBar>
@@ -34,19 +46,42 @@ interface DockListViewProps {
   isLoading: boolean;
   bags: { [id: string]: Bag };
   searchText: string;
+  platform: string;
 }
 const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
   const history = useHistory();
 
+  const scanQRCode = () => {
+    window.cordova.plugins.barcodeScanner.scan(
+      (result: any) => {
+        const url = new URL(result.text);
+        //TODO: check if link is also a valid hosted web app
+        history.push(
+          url.pathname + url.search
+        );
+      },
+      (err: string) => {
+        console.error(err);
+      },
+      {
+        showTorchButton: true,
+        prompt: "Scan document URL",
+        formats: "QR_CODE",
+        resultDisplayDuration: 0
+      }
+    );
+  }
+
   return (
     <IonContent>
+        { props.platform !== "web" ?
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton color="tertiary" onClick={() => {
-                  history.push("/doc/upload/");
-                }}>
-            <IonIcon icon={add} />
+          <IonFabButton color="tertiary" onClick={scanQRCode}>
+            <IonIcon icon={qrCode} />
           </IonFabButton>
         </IonFab>
+        : undefined
+        }
         {
         /*
         props.isLoading && props.action === "list"
@@ -90,7 +125,8 @@ export const DockListView = connect((state: State) => {
   return {
     bags: state.bags,
     isLoading: state.isLoading,
-    searchText: state.searchText
+    searchText: state.searchText,
+    platform: state.platform,
   }
 }, (dispatch: Dispatch) => {
   return {}

@@ -5,7 +5,8 @@ import {
   IonItem,
   IonRefresher,
   IonRefresherContent,
-  IonSearchbar
+  IonSearchbar,
+  IonButton,
 } from '@ionic/react';
 import { RefresherEventDetail } from '@ionic/core';
 
@@ -22,6 +23,8 @@ interface HorizontalProps {
 }
 
 const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
+  const history = useHistory();
+
   const doFetch = () => {
     props.init({
       privateKey: props.privateKey,
@@ -44,6 +47,9 @@ const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
       <IonRefresherContent></IonRefresherContent>
     </IonRefresher>
     <IonItem detail={false} no-padding lines="none" className="SearchBarContainer">
+      <IonButton className="AddButton" icon-only slot="start" color="none" onClick={() => {
+                  history.push("/doc/upload/");
+                }}>+</IonButton>
       <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
     </IonItem>
     </React.Fragment>

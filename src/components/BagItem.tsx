@@ -33,7 +33,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, registryUri, id }) => {
         history.push("/doc/show/" + registryUri + "/" + id);
       }}>
         <div className="IconContainer">
-          <IonIcon icon={documentIcon} size="large"/>
+          <IonIcon icon={documentIcon} color="secondary" size="large"/>
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>

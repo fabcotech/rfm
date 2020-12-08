@@ -29,6 +29,7 @@
     "ethereumjs-wallet": "^1.0.1",
     "ionicons": "^5.2.3",
     "pako": "^2.0.2",
+    "phonegap-plugin-barcodescanner": "^8.1.0",
     "qrcode": "^1.4.4",
     "rchain-token-files": "fabcotech/rchain-token#aaf8df2b9715608f307647989f5f8f3e24565bae",
     "rchain-toolkit": "^0.2.8",
