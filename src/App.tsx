@@ -47,7 +47,7 @@ const AppComponent: React.FC<AppProps> = (props) => {
       </Suspense>
     )
   }
-
+  
   return (
     <Router>
       <IonPage id="home-page">
@@ -60,19 +60,19 @@ const AppComponent: React.FC<AppProps> = (props) => {
         <IonContent>
           <RChainLogo className="BackgroundLogo"/>
           <IonRouterOutlet id="main">
-            <Route exact path="/doc/show/:bagId?" render={(props) => (
+            <Route exact path="/doc/show/:registryUri/:bagId?" render={(props) => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView bagId={props.match.params.bagId} action="show" />
+                <DockListView registryUri={props.match.params.registryUri} bagId={props.match.params.bagId} action="show" />
               </Suspense>
             )} />
-            <Route exact path="/doc/" render={(props) => (
+            <Route exact path="/doc/" render={() => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView action="list" />
+                <DockListView registryUri={props.registryUri as string} action="list" />
               </Suspense>
             )} />
-            <Route exact path="/doc/upload" render={(props) => (
+            <Route exact path="/doc/upload" render={() => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView action="upload" />
+                <DockListView registryUri={props.registryUri as string} action="upload" />
               </Suspense>
             )} />
             <Route path="/" render={({ location }) => 

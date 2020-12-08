@@ -29,6 +29,7 @@ type TRouteParams = {
 }
 interface DockListViewProps {
   action: 'show' | 'list' | 'upload';
+  registryUri: string,
   bagId?: string;
   isLoading: boolean;
   bags: { [id: string]: Bag };
@@ -57,7 +58,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
       {
         props.action === "show" ?
         <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
-          <ModalDocument bagId={props.bagId as string}></ModalDocument>
+          <ModalDocument registryUri={props.registryUri as string} bagId={props.bagId as string}></ModalDocument>
         </IonModal> : undefined
       }
       {
@@ -72,7 +73,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
           {
             !props.isLoading ?
               Object.keys(props.bags).filter(bagId =>  { return true } ).map(bagId => {
-                return <BagItem key={bagId} id={bagId} bag={props.bags[bagId]} />
+                return <BagItem key={bagId} registryUri={props.registryUri} id={bagId} bag={props.bags[bagId]} />
               })
               :
               [...Array(10)].map((x, i) =>

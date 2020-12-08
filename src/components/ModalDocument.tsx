@@ -12,10 +12,11 @@ import './ModalDocument.scoped.css';
 import QRCodeComponent from './QRCodeComponent';
 
 interface ModalDocumentProps {
+  registryUri: string,
   bagId: string;
   bags: State["bags"];
   bagsData: State["bagsData"];
-  loadBag: (bagId: string) => void;
+  loadBag: (registryUri: string, bagId: string) => void;
 }
 
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocumentProps) => {
@@ -25,14 +26,14 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
   useEffect(() => {
-    props.loadBag(props.bagId);
+    props.loadBag(props.registryUri, props.bagId);
   });
 
   const renderLoading = () => {
     return <IonProgressBar color="secondary" type="indeterminate"></IonProgressBar>
   };
 
-  const document = props.bagsData[props.bagId];
+  const document = props.bagsData[props.registryUri + "/" + props.bagId];
   return <>
     <IonHeader>
       <IonToolbar color="primary">
@@ -63,7 +64,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
         document === null ?
         <span>No document attached</span> :                
                     <div className="qrCodeContainer">
-                      <QRCodeComponent url="http://localhost:3000" />
+                      <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
                     </div>
       }
       {
@@ -79,8 +80,8 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
             }
           </div>
           <div className="right">
-            <h5>{props.bagsData[props.bagId].name}</h5>
-            <h5>{props.bagsData[props.bagId].mimeType}</h5>
+            <h5>{props.bagsData[props.registryUri + "/" + props.bagId].name}</h5>
+            <h5>{props.bagsData[props.registryUri + "/" + props.bagId].mimeType}</h5>
           </div>
         </div>        : undefined
       }
@@ -97,10 +98,11 @@ const ModalDocument = connect(
   },
   (dispatch: Dispatch) => {
     return {
-      loadBag: (bagId: string) => {
+      loadBag: (registryUri: string, bagId: string) => {
         dispatch({
           type: 'LOAD_BAG_DATA',
           payload: {
+            registryUri: registryUri,
             bagId: bagId,
           }
         })

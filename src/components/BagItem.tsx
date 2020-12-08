@@ -17,10 +17,11 @@ import { document as documentIcon, trash, create } from 'ionicons/icons';
 
 interface BagItemProps {
   bag: Bag;
+  registryUri: string;
   id: string;
 }
 
-const BagItemComponent: React.FC<BagItemProps> = ({ bag, id }) => {
+const BagItemComponent: React.FC<BagItemProps> = ({ bag, registryUri, id }) => {
   const history = useHistory();
   return (
     <IonItemSliding>
@@ -29,7 +30,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, id }) => {
         <IonItemOption color="danger" onClick={() => console.log('share clicked')}><IonIcon icon={trash} size="large"></IonIcon></IonItemOption>
       </IonItemOptions>
       <IonItem detail={false} button onClick={() => {
-        history.push("/doc/show/" + id);
+        history.push("/doc/show/" + registryUri + "/" + id);
       }}>
         <div className="IconContainer">
           <IonIcon icon={documentIcon} size="large"/>

@@ -6,6 +6,8 @@ import { v4 } from "uuid";
 import generateSignature from '../../utils/generateSignature';
 import { Document, store, State } from '../../store/';
 
+import replacer from '../../utils/replacer';
+
 const {
   createTokensTerm,
 } = require('rchain-token-files');
@@ -22,8 +24,8 @@ const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(state.privateKey a
     mimeType: document.mimeType,
     name: document.name,
     data: base64,
-    signatures: [],
-  });
+    signatures: []
+  } as Document, replacer);
   const gzipped = Buffer.from(deflate(asJson)).toString("base64");
   const newNonce = v4().replace(/-/g, "");
   const payload = {
