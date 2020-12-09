@@ -218,11 +218,9 @@ class ModalUploadDocumentComponent extends React.Component<
                 <IonIcon icon={documentIcon} size="large" /> Drop your file
               </span>
             </div>
-          ) : (
-              undefined
-            )}
-          {this.props.platform === 'ios' ||
-            this.props.platform === 'android' ? (
+          ) : undefined}
+          {this.props.platform === "ios" ||
+            this.props.platform === "android" ? (
               <IonButton
                 onClick={() => {
                   this.nativeFilePicker();

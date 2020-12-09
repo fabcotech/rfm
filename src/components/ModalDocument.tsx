@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
 import {
   IonHeader,
   IonContent,
@@ -11,21 +10,11 @@ import {
   IonButton,
   IonProgressBar,
 } from '@ionic/react';
-=======
-import { IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton, IonProgressBar } from '@ionic/react';
-import { State } from '../store';
->>>>>>> Prettier
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { document as documentIcon } from 'ionicons/icons';
 import { useHistory } from 'react-router';
-<<<<<<< HEAD
 import { Page, pdfjs, Document as PdfDocument } from 'react-pdf';
-=======
-import { Document, Page, pdfjs } from 'react-pdf';
-
-import './ModalDocument.scoped.css';
->>>>>>> Prettier
 
 import QRCodeComponent from './QRCodeComponent';
 import checkSignature from '../utils/checkSignature';
@@ -47,9 +36,8 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   const history = useHistory();
   const pdfcontent64 = '';
   const [page, setPage] = useState<number>();
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${
-    pdfjs.version
-  }/pdf.worker.js`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version
+    }/pdf.worker.js`;
 
   useEffect(() => {
     props.loadBag(props.registryUri, props.bagId);
@@ -59,7 +47,6 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
     return <IonProgressBar color="secondary" type="indeterminate" />;
   };
 
-<<<<<<< HEAD
   const document = props.bagsData[props.registryUri + '/' + props.bagId];
   let signedDocument: Document | undefined;
   if (document) {
@@ -80,7 +67,6 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
               }}
             >
               Close
-<<<<<<< HEAD
             </IonButton>
           </IonButtons>
           <IonIcon icon={documentIcon} slot="start" size="large" />
@@ -89,80 +75,26 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
       <IonContent>
         {document ? (
           <PdfDocument
-            file={'data:application/pdf;base64,' + pdfcontent64}
+            file={'data:application/pdf;base64,' + document.data}
             loading={renderLoading}
           >
             <Page pageNumber={page} pageIndex={0} />
           </PdfDocument>
         ) : (
-          <React.Fragment />
-        )}
+            <React.Fragment />
+          )}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
-          undefined
-        )}
+            undefined
+          )}
         {document === null ? (
           <span>No document attached</span>
         ) : (
-          <div className="qrCodeContainer">
-            <QRCodeComponent
-              url={`http://localhost:3000/doc/show/${props.registryUri}/${
-                props.bagId
-              }`}
-            />
-=======
-=======
-  const document = props.bagsData[props.registryUri + "/" + props.bagId];
-  return <>
-    <IonHeader>
-      <IonToolbar color="primary">
-        <IonTitle>Document Viewer</IonTitle>
-        <IonButtons slot="end">
-          <IonButton onClick={() => {
-            history.replace('/doc', { direction: 'back' })
-          }}>
-            Close
->>>>>>> Prettier
-          </IonButton>
-        </IonButtons>
-        <IonIcon icon={documentIcon} slot="start" size="large"></IonIcon>
-      </IonToolbar>
-    </IonHeader>
-    <IonContent>
-      {
-        document ?
-          <Document file={"data:application/pdf;base64," + document.data} loading={renderLoading}>
-
-            <Page pageNumber={page} pageIndex={0} />
-          </Document> : <React.Fragment></React.Fragment>
-      }
-      {
-        typeof document === 'undefined' ?
-          <IonLoading isOpen={true}></IonLoading> : undefined
-      }
-      {
-        document === null ?
-          <span>No document attached</span> :
-          <div className="qrCodeContainer">
-            <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
-          </div>
-      }
-      {
-<<<<<<< HEAD
-        document?
-        <div className="document">
-          <div className="left">
-            {
-              ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
-              <img
-                alt={document.name}
-                src={`data:${document.mimeType};base64, ${document.data}`}
-              ></img> :<React.Fragment></React.Fragment>
-            }
->>>>>>> Added qr code scanner, yarn.lock
-          </div>
-        )}
+            <div className="qrCodeContainer">
+              <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
+            </div>
+          )}
         {document ? (
           <div>
             <div className="document">
@@ -170,13 +102,13 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                 {['image/png', 'image/jpg', 'image/jpeg'].includes(
                   document.mimeType
                 ) ? (
-                  <img
-                    alt={document.name}
-                    src={`data:${document.mimeType};base64, ${document.data}`}
-                  />
-                ) : (
-                  <React.Fragment />
-                )}
+                    <img
+                      alt={document.name}
+                      src={`data:${document.mimeType};base64, ${document.data}`}
+                    />
+                  ) : (
+                    <React.Fragment />
+                  )}
               </div>
               <div className="right">
                 <h5>
@@ -196,46 +128,24 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                   signature n°{s}:{' '}
                   {checkSignature(signedDocument as Document, s)
                     ? `✓ verified (${document.signatures[s].publicKey.slice(
-                        0,
-                        12
-                      )}…)`
+                      0,
+                      12
+                    )}…)`
                     : `✗ invalid (${document.signatures[s].publicKey.slice(
-                        0,
-                        12
-                      )}…)`}
+                      0,
+                      12
+                    )}…)`}
                 </p>
               );
             })}
           </div>
         ) : (
-          undefined
-        )}
+            undefined
+          )}
       </IonContent>
     </>
   );
 };
-=======
-        document ?
-          <div className="document">
-            <div className="left">
-              {
-                ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
-                  <img
-                    alt={document.name}
-                    src={`data:${document.mimeType};base64, ${document.data}`}
-                  ></img> : <React.Fragment></React.Fragment>
-              }
-            </div>
-            <div className="right">
-              <h5>{props.bagsData[props.registryUri + "/" + props.bagId].name}</h5>
-              <h5>{props.bagsData[props.registryUri + "/" + props.bagId].mimeType}</h5>
-            </div>
-          </div> : undefined
-      }
-    </IonContent>
-  </>
-}
->>>>>>> Prettier
 
 const ModalDocument = connect(
   (state: State) => {

@@ -72,9 +72,6 @@ const reducer = (
         privateKey: action.payload.privateKey,
       };
     }
-<<<<<<< HEAD
-    case 'INIT_COMPLETED': {
-=======
     case "ADD_IDENTITY": {
       return {
         ...state,
@@ -85,7 +82,6 @@ const reducer = (
       };
     }
     case "INIT_COMPLETED": {
->>>>>>> Identity mockups, not working yet
       return {
         ...state,
         nonce: action.payload.nonce,

@@ -11,7 +11,10 @@ import {
   IonButton,
 =======
   IonItemOption
+<<<<<<< HEAD
 >>>>>>> Prettier
+=======
+>>>>>>> ccfd166b42ba613e70eb84a8a5ce67423c5faf9a
 } from '@ionic/react';
 
 import { useHistory } from 'react-router';
@@ -59,6 +62,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({
         <div className="IconContainer">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
           <IonIcon icon={documentIcon} size="large" />
 =======
           <IonIcon icon={documentIcon} color="secondary" size="large"/>
@@ -66,6 +70,9 @@ const BagItemComponent: React.FC<BagItemProps> = ({
 =======
           <IonIcon icon={documentIcon} color="secondary" size="large" />
 >>>>>>> Prettier
+=======
+          <IonIcon icon={documentIcon} color="secondary" size="large" />
+>>>>>>> ccfd166b42ba613e70eb84a8a5ce67423c5faf9a
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>{id}</h2>
