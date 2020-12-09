@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonChip,
   IonLabel
@@ -6,7 +6,7 @@ import {
 
 import { QRCodeRenderersOptions, toCanvas } from "qrcode";
 
-import './QRCodeComponent.scoped.css';
+import './QRCodeComponent.scoped.scss';
 
 interface QRCodeComponentProps {
   url: string
@@ -14,13 +14,19 @@ interface QRCodeComponentProps {
 const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ url }) => {
   const qrcodecanvas = React.useRef(null);
 
+  const [enlarged, setEnlarged] = useState(false);
+
+  const ToggleSize = () => {
+    setEnlarged(!enlarged);
+  };
+
   useEffect(() => {
     //Update qr code
     if (url) {
       const opts = {
         errorCorrectionLevel: "H",
-        width: 100,
-        height: 100,
+        width: enlarged ? 220 : 100,
+        height: enlarged ? 220 : 100,
         margin: 1
       } as QRCodeRenderersOptions;
 
@@ -33,10 +39,12 @@ const QRCodeComponent: React.FC<QRCodeComponentProps> = ({ url }) => {
         console.info(res);
       });
     }
-  }, [url]);
+  }, [url, enlarged]);
 
   return (
-    <IonChip className="QRContainer" color="tertiary">
+    <IonChip className={enlarged ? "QRContainer large" : "QRContainer small"} color="tertiary" onClick={() => {
+      ToggleSize();
+    }}>
       <canvas ref={qrcodecanvas} className="Image" />
       <IonLabel color="light">Scan to view</IonLabel>
     </IonChip>
