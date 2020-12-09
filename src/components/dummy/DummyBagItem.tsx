@@ -4,7 +4,7 @@ import {
   IonItem,
   IonLabel,
   IonSkeletonText
-  } from '@ionic/react';
+} from '@ionic/react';
 
 import '../BagItem.scoped.css';
 
@@ -17,14 +17,14 @@ const DummyBagItem: React.FC<DummyBagItemProps> = ({ id }) => {
   return (
     <IonItem detail={false}>
       <div className="IconContainer">
-        <IonIcon icon={document} size="large"/>
+        <IonIcon icon={document} size="large" color="secondary" />
       </div>
       <IonLabel className="ion-text-wrap">
         <h4>
-            <IonSkeletonText animated style={{ width: '80%' }}></IonSkeletonText>
+          <IonSkeletonText animated style={{ width: '80%' }}></IonSkeletonText>
         </h4>
         <h4>
-            <IonSkeletonText animated style={{ width: '60%' }}></IonSkeletonText>
+          <IonSkeletonText animated style={{ width: '60%' }}></IonSkeletonText>
         </h4>
       </IonLabel>
     </IonItem>

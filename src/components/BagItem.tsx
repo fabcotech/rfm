@@ -53,7 +53,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({
         }}
       >
         <div className="IconContainer">
-          <IonIcon icon={documentIcon} size="large" />
+          <IonIcon icon={documentIcon} color="secondary" size="large" />
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>{id}</h2>

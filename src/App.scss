@@ -1,0 +1,112 @@
+.plt-ios ion-tab-bar {
+  padding-top: var(--ion-safe-area-top);
+}
+
+.plt-ios ion-header ion-toolbar.noSafeAreaPaddingTop {
+  padding-top: 0 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--ion-color-secondary);
+}
+
+.modal-wrapper.sc-ion-modal-md {
+  height: 100%;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  display: block;
+}
+
+.BackgroundLogo {
+  opacity: 0.05;
+  z-index: 1;
+  position: absolute;
+  pointer-events: none;
+  overflow-y: none;
+}
+
+.RoundedHeader {
+  position: relative;
+  margin-bottom: 1.5em;
+}
+
+.Waves {
+  position: fixed;
+  top: auto;
+  width: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.RedFill {
+  background: var(--ion-color-primary);
+  width: 100%;
+  transition: all 0.4s ease-out;
+
+  &.show {
+    height: 100vh;
+  }
+  &.hide {
+    height: 0vh;
+  }
+}
+
+.IdentityBG {
+  --background: var(--ion-color-primary);
+}
+
+.ProfileButton {
+  --box-shadow: none;
+}
+
+.ProfilePanel {
+  background: white;
+  border-radius: 1em;
+  margin-top: 1em;
+  width: 100%;
+  box-shadow: 0 5px 10px black;
+  height: 100%;
+  color: black;
+  top: 100%;
+  transition: all 0.6s ease-out;
+  margin-top: 100vh;
+
+  &.show {
+    top: 200%;
+    margin-top: 1em;
+  }
+
+  &.hide {
+    top: 0%;
+    margin-top: 200vh;
+  }
+}
+
+ion-slide.IdentitySlide {
+  height: 100%;
+}
+
+ion-slides.IdentityList {
+  height: 100%;
+}
+
+.ArrowRight {
+  margin: 1em;
+  position: absolute;
+  right: 0;
+  bottom: 50%;
+  border-top: 0.7em solid transparent;
+  border-bottom: 0.7em solid transparent;
+  border-left: 1em solid var(--ion-color-primary);
+}
+
+.ArrowLeft {
+  margin: 1em;
+  position: absolute;
+  left: 0;
+  bottom: 50%;
+  border-top: 0.7em solid transparent;
+  border-bottom: 0.7em solid transparent;
+  border-right: 1em solid var(--ion-color-primary);
+}

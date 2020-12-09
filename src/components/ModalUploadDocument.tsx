@@ -63,7 +63,7 @@ interface ModalUploadDocumentState {
 class ModalUploadDocumentComponent extends React.Component<
   ModalUploadDocumentProps,
   ModalUploadDocumentState
-> {
+  > {
   constructor(props: ModalUploadDocumentProps) {
     super(props);
     this.state = {
@@ -152,7 +152,7 @@ class ModalUploadDocumentComponent extends React.Component<
     const file = files[0];
     var r = new FileReader();
     try {
-      r.onloadend = function(e) {
+      r.onloadend = function (e) {
         if (!e || !e.target || typeof r.result !== 'string') {
           return;
         }
@@ -218,21 +218,19 @@ class ModalUploadDocumentComponent extends React.Component<
                 <IonIcon icon={documentIcon} size="large" /> Drop your file
               </span>
             </div>
-          ) : (
-            undefined
-          )}
-          {this.props.platform === 'ios' ||
-          this.props.platform === 'android' ? (
-            <IonButton
-              onClick={() => {
-                this.nativeFilePicker();
-              }}
-            >
-              Pick a document
-            </IonButton>
-          ) : (
-            undefined
-          )}
+          ) : undefined}
+          {this.props.platform === "ios" ||
+            this.props.platform === "android" ? (
+              <IonButton
+                onClick={() => {
+                  this.nativeFilePicker();
+                }}
+              >
+                Pick a document
+              </IonButton>
+            ) : (
+              undefined
+            )}
           {this.state.document ? (
             <div className="document">
               <div className="left">
@@ -244,8 +242,8 @@ class ModalUploadDocumentComponent extends React.Component<
               </div>
             </div>
           ) : (
-            undefined
-          )}
+              undefined
+            )}
           {this.state.document ? (
             <IonItem>
               <IonButton
@@ -269,8 +267,8 @@ class ModalUploadDocumentComponent extends React.Component<
               </IonButton>
             </IonItem>
           ) : (
-            undefined
-          )}
+              undefined
+            )}
         </IonContent>
       </>
     );
