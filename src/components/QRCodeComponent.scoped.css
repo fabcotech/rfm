@@ -1,12 +1,12 @@
 ion-chip.QRContainer {
-    flex-direction: column;
-    width: auto;
-    height: auto;
-    border-radius: 0.5em;
-    padding: 0.3em;
-    background: var(--ion-color-primary, --ion-color-primary) !important;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  border-radius: 0.5em;
+  padding: 0.3em;
+  background: var(--ion-color-primary, --ion-color-primary) !important;
 }
-  
+
 canvas.Image {
-    border-radius: 0.3em;
+  border-radius: 0.3em;
 }

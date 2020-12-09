@@ -18,7 +18,7 @@ interface HorizontalProps {
   privateKey: string;
   registryUri: string;
   searchText: string;
-  init: (a: { privateKey: string; registryUri: string}) => void;
+  init: (a: { privateKey: string; registryUri: string }) => void;
   setSearchText: (searchText: string) => void;
 }
 
@@ -42,16 +42,16 @@ const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
   }
 
   return (
-  <React.Fragment>
-    <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
-      <IonRefresherContent></IonRefresherContent>
-    </IonRefresher>
-    <IonItem detail={false} no-padding lines="none" className="SearchBarContainer">
-      <IonButton className="AddButton" icon-only slot="start" color="none" onClick={() => {
-                  history.push("/doc/upload/");
-                }}>+</IonButton>
-      <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
-    </IonItem>
+    <React.Fragment>
+      <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
+        <IonRefresherContent></IonRefresherContent>
+      </IonRefresher>
+      <IonItem detail={false} no-padding lines="none" className="SearchBarContainer">
+        <IonButton className="AddButton" icon-only slot="start" color="none" onClick={() => {
+          history.push("/doc/upload/");
+        }}>+</IonButton>
+        <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
+      </IonItem>
     </React.Fragment>
   );
 };
@@ -66,7 +66,7 @@ const Horizontal = connect(
   },
   (dispatch: Dispatch) => {
     return {
-      init: (a: { privateKey: string; registryUri: string}) => {
+      init: (a: { privateKey: string; registryUri: string }) => {
         dispatch({
           type: 'INIT',
           payload: a,

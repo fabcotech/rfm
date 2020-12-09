@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   IonLabel,
@@ -30,25 +30,25 @@ const CreateIdentityScreen: React.FC = (props) => {
   }
 
   return (
-        <IonSlide>
-          <IonGrid>
-            <IonRow>
-              <IonCol>
-                <IonLabel>Please write down your seed:</IonLabel>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-                  {seed.map(function(word, index){
-                    return <IonChip key={ index }>{index} : {word as String}</IonChip>;
-                  })}
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonButton color="none" className="ActionButton">Next</IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonSlide>
+    <IonSlide>
+      <IonGrid>
+        <IonRow>
+          <IonCol>
+            <IonLabel>Please write down your seed:</IonLabel>
+          </IonCol>
+        </IonRow>
+        <IonRow>
+          {seed.map(function (word, index) {
+            return <IonChip key={index}>{index} : {word as String}</IonChip>;
+          })}
+        </IonRow>
+        <IonRow>
+          <IonCol>
+            <IonButton color="none" className="ActionButton">Next</IonButton>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    </IonSlide>
   )
 };
 

@@ -40,7 +40,7 @@ type TRouteParams = {
   uri: string; // since it route params
 }
 interface DockListViewProps {
-  action: 'show' | 'list' | 'upload';
+  action: 'show' | 'list' | 'upload';
   registryUri: string,
   bagId?: string;
   isLoading: boolean;
@@ -74,15 +74,15 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
 
   return (
     <IonContent>
-        { props.platform !== "web" ?
+      { props.platform !== "web" ?
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton color="tertiary" onClick={scanQRCode}>
             <IonIcon icon={qrCode} />
           </IonFabButton>
         </IonFab>
         : undefined
-        }
-        {
+      }
+      {
         /*
         props.isLoading && props.action === "list"
         ? renderLoading()
@@ -92,30 +92,30 @@ const DockListViewComponent: React.FC<DockListViewProps> = (props) => {
       <Horizontal />
       {
         props.action === "show" ?
-        <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
-          <ModalDocument registryUri={props.registryUri as string} bagId={props.bagId as string}></ModalDocument>
-        </IonModal> : undefined
+          <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
+            <ModalDocument registryUri={props.registryUri as string} bagId={props.bagId as string}></ModalDocument>
+          </IonModal> : undefined
       }
       {
         props.action === "upload" ?
-        <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
-          <ModalUploadDocument></ModalUploadDocument>
-        </IonModal> : undefined
+          <IonModal isOpen={true} onWillDismiss={() => { history.push("/doc/") }}>
+            <ModalUploadDocument></ModalUploadDocument>
+          </IonModal> : undefined
       }
       {
         props.action === "list" ?
-        <>
-          {
-            !props.isLoading ?
-              Object.keys(props.bags).filter(bagId =>  { return true } ).map(bagId => {
-                return <BagItem key={bagId} registryUri={props.registryUri} id={bagId} bag={props.bags[bagId]} />
-              })
-              :
-              [...Array(10)].map((x, i) =>
-                <DummyBagItem key={i} id={i.toString()} />
-              )
-          }
-        </> : undefined
+          <>
+            {
+              !props.isLoading ?
+                Object.keys(props.bags).filter(bagId => { return true }).map(bagId => {
+                  return <BagItem key={bagId} registryUri={props.registryUri} id={bagId} bag={props.bags[bagId]} />
+                })
+                :
+                [...Array(10)].map((x, i) =>
+                  <DummyBagItem key={i} id={i.toString()} />
+                )
+            }
+          </> : undefined
       }
     </IonContent>
   )

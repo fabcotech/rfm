@@ -21,7 +21,7 @@ import './LoginView.scoped.css';
 
 import NoIdentityScreen from "../components/identity/NoIdentityScreen";
 //import CreateIdentityScreen from "../components/identity/CreateIdentityScreen";
-import {ReactComponent as RChainLogo} from '../assets/rchain.svg';
+import { ReactComponent as RChainLogo } from '../assets/rchain.svg';
 
 
 interface LoginViewProps {
@@ -48,86 +48,86 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
   return (
     <IonContent>
       <IonSlides
-      class="Instructions"
-      options={slideOpts}
-      pager={true}
-      onIonSlideDidChange={(event: any)=> console.info(event)}
+        class="Instructions"
+        options={slideOpts}
+        pager={true}
+        onIonSlideDidChange={(event: any) => console.info(event)}
       >
         <IonSlide>
           {
-          devLogin
-          ?
-          <React.Fragment>
-          <IonGrid>
-            <IonRow>
-              <IonItem>
-              <IonLabel position="floating">Address</IonLabel>
-              <IonInput
-                placeholder="address" 
-                type="text" 
-                value={registryUri}
-                onIonChange={(e) => setRegstryUri((e.target as HTMLInputElement).value)}
-              ></IonInput>
-            </IonItem>
-          </IonRow>
-          <IonRow>
-        <IonItem>
-          <IonLabel position="floating">Private key</IonLabel>
-          <IonInput
-            placeholder="Private key" 
-            type="password" 
-            value={privateKey}
-            onIonChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
-          ></IonInput>
-        </IonItem>
-        </IonRow>
-        <IonRow>
-        <IonItem>
-          <IonButton
-            disabled={!privateKey || !registryUri}
-            onClick={() => {
-              props.init({
-                registryUri,
-                privateKey,
-              });
-              history.push("/doc");
-            }}
-          >
-            Load
+            devLogin
+              ?
+              <React.Fragment>
+                <IonGrid>
+                  <IonRow>
+                    <IonItem>
+                      <IonLabel position="floating">Address</IonLabel>
+                      <IonInput
+                        placeholder="address"
+                        type="text"
+                        value={registryUri}
+                        onIonChange={(e) => setRegstryUri((e.target as HTMLInputElement).value)}
+                      ></IonInput>
+                    </IonItem>
+                  </IonRow>
+                  <IonRow>
+                    <IonItem>
+                      <IonLabel position="floating">Private key</IonLabel>
+                      <IonInput
+                        placeholder="Private key"
+                        type="password"
+                        value={privateKey}
+                        onIonChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
+                      ></IonInput>
+                    </IonItem>
+                  </IonRow>
+                  <IonRow>
+                    <IonItem>
+                      <IonButton
+                        disabled={!privateKey || !registryUri}
+                        onClick={() => {
+                          props.init({
+                            registryUri,
+                            privateKey,
+                          });
+                          history.push("/doc");
+                        }}
+                      >
+                        Load
           </IonButton>
-        </IonItem>
-        </IonRow>
-        </IonGrid>
-        </React.Fragment>
-        :
-        <React.Fragment>
-          <NoIdentityScreen />
-          </React.Fragment>
+                    </IonItem>
+                  </IonRow>
+                </IonGrid>
+              </React.Fragment>
+              :
+              <React.Fragment>
+                <NoIdentityScreen />
+              </React.Fragment>
           }
           <div className="BottomBar">
-          <IonItem>
-            <IonLabel>Dev Login: </IonLabel>
-            <IonToggle color="secondary" checked={devLogin} onIonChange={e => setDevLogin(e.detail.checked)} />
-          </IonItem>
+            <IonItem>
+              <IonLabel>Dev Login: </IonLabel>
+              <IonToggle color="secondary" checked={devLogin} onIonChange={e => setDevLogin(e.detail.checked)} />
+            </IonItem>
           </div>
         </IonSlide>
         {
           props.action === "new" ?
-          <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-            <IonSlide>
-              <CreateIdentityScreen />
-            </IonSlide>
-          </Suspense>
-          : undefined
+            <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+              <IonSlide>
+                <CreateIdentityScreen />
+              </IonSlide>
+            </Suspense>
+            : undefined
         }
         {
           props.action === "restore" ?
-          <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-            <IonSlide>
-              <RestoreIdentityScreen />
-            </IonSlide>
-          </Suspense>
-          : undefined
+            <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+              <IonSlide>
+                <RestoreIdentityScreen />
+              </IonSlide>
+            </Suspense>
+            : undefined
         }
       </IonSlides>
     </IonContent>
@@ -136,17 +136,17 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
 
 export const LoginView = connect(
   undefined, (dispatch: Dispatch) => {
-  return {
-    init: (a: { registryUri: string, privateKey: string }) => {
-      dispatch({
-        type: 'INIT',
-        payload: {
-          privateKey: a.privateKey,
-          registryUri: a.registryUri,
-        }
-      })
+    return {
+      init: (a: { registryUri: string, privateKey: string }) => {
+        dispatch({
+          type: 'INIT',
+          payload: {
+            privateKey: a.privateKey,
+            registryUri: a.registryUri,
+          }
+        })
+      }
     }
-  }
-})(LoginViewComponent);
+  })(LoginViewComponent);
 
 export default LoginView;

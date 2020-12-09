@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton, IonProgressBar } from '@ionic/react';
+import { IonHeader, IonContent, IonToolbar, IonTitle, IonLoading, IonIcon, IonButtons, IonButton, IonProgressBar } from '@ionic/react';
 import { State } from '../store';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { document as documentIcon } from 'ionicons/icons';
 import { useHistory } from 'react-router';
-import { Document, Page, pdfjs  } from 'react-pdf';
+import { Document, Page, pdfjs } from 'react-pdf';
 
 import './ModalDocument.scoped.css';
 
@@ -42,48 +42,48 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (props: ModalDocume
           <IonButton onClick={() => {
             history.replace('/doc', { direction: 'back' })
           }}>
-              Close
+            Close
           </IonButton>
         </IonButtons>
         <IonIcon icon={documentIcon} slot="start" size="large"></IonIcon>
       </IonToolbar>
     </IonHeader>
     <IonContent>
-    {
-              document ?
-              <Document file={"data:application/pdf;base64," + document.data} loading={renderLoading}>
+      {
+        document ?
+          <Document file={"data:application/pdf;base64," + document.data} loading={renderLoading}>
 
-                <Page pageNumber={page} pageIndex={0} />
-              </Document> :<React.Fragment></React.Fragment>
-            }
+            <Page pageNumber={page} pageIndex={0} />
+          </Document> : <React.Fragment></React.Fragment>
+      }
       {
         typeof document === 'undefined' ?
-        <IonLoading isOpen={true}></IonLoading> : undefined
+          <IonLoading isOpen={true}></IonLoading> : undefined
       }
       {
         document === null ?
-        <span>No document attached</span> :                
-                    <div className="qrCodeContainer">
-                      <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
-                    </div>
+          <span>No document attached</span> :
+          <div className="qrCodeContainer">
+            <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
+          </div>
       }
       {
-        document?
-        <div className="document">
-          <div className="left">
-            {
-              ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
-              <img
-                alt={document.name}
-                src={`data:${document.mimeType};base64, ${document.data}`}
-              ></img> :<React.Fragment></React.Fragment>
-            }
-          </div>
-          <div className="right">
-            <h5>{props.bagsData[props.registryUri + "/" + props.bagId].name}</h5>
-            <h5>{props.bagsData[props.registryUri + "/" + props.bagId].mimeType}</h5>
-          </div>
-        </div>        : undefined
+        document ?
+          <div className="document">
+            <div className="left">
+              {
+                ['image/png', 'image/jpg', 'image/jpeg'].includes(document.mimeType) ?
+                  <img
+                    alt={document.name}
+                    src={`data:${document.mimeType};base64, ${document.data}`}
+                  ></img> : <React.Fragment></React.Fragment>
+              }
+            </div>
+            <div className="right">
+              <h5>{props.bagsData[props.registryUri + "/" + props.bagId].name}</h5>
+              <h5>{props.bagsData[props.registryUri + "/" + props.bagId].mimeType}</h5>
+            </div>
+          </div> : undefined
       }
     </IonContent>
   </>

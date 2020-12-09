@@ -52,7 +52,7 @@ interface ModalUploadDocumentState {
 class ModalUploadDocumentComponent extends React.Component<
   ModalUploadDocumentProps,
   ModalUploadDocumentState
-> {
+  > {
   constructor(props: ModalUploadDocumentProps) {
     super(props);
     this.state = {
@@ -213,15 +213,15 @@ class ModalUploadDocumentComponent extends React.Component<
             </div>
           ) : undefined}
           {this.props.platform === "ios" ||
-          this.props.platform === "android" ? (
-            <IonButton
-              onClick={() => {
-                this.nativeFilePicker();
-              }}
-            >
-              Pick a document
-            </IonButton>
-          ) : undefined}
+            this.props.platform === "android" ? (
+              <IonButton
+                onClick={() => {
+                  this.nativeFilePicker();
+                }}
+              >
+                Pick a document
+              </IonButton>
+            ) : undefined}
           {this.state.document ? (
             <div className="document">
               <div className="left">

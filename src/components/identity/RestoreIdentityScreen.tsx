@@ -15,23 +15,23 @@ const RestoreIdentityScreen: React.FC = (props) => {
 
 
   return (
-        <IonSlide>
-          <IonGrid>
-            <IonRow>
-              <IonCol>
-                <IonLabel>Please paste your seed:</IonLabel>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-                  
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonButton color="none" className="ActionButton">Next</IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonSlide>
+    <IonSlide>
+      <IonGrid>
+        <IonRow>
+          <IonCol>
+            <IonLabel>Please paste your seed:</IonLabel>
+          </IonCol>
+        </IonRow>
+        <IonRow>
+
+        </IonRow>
+        <IonRow>
+          <IonCol>
+            <IonButton color="none" className="ActionButton">Next</IonButton>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    </IonSlide>
   )
 };
 

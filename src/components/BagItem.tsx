@@ -7,7 +7,7 @@ import {
   IonItemSliding,
   IonItemOptions,
   IonItemOption
-  } from '@ionic/react';
+} from '@ionic/react';
 
 import { useHistory } from 'react-router';
 import { Bag } from '../store';
@@ -33,7 +33,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, registryUri, id }) => {
         history.push("/doc/show/" + registryUri + "/" + id);
       }}>
         <div className="IconContainer">
-          <IonIcon icon={documentIcon} color="secondary" size="large"/>
+          <IonIcon icon={documentIcon} color="secondary" size="large" />
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>
