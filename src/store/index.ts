@@ -11,6 +11,7 @@ export interface State {
 
   // rchain-token contract
   nonce: undefined | string;
+  identities: { [pubKey: string]: string }; //Map of identities <pubkey, regUri>
   registryUri: undefined | string;
 
   publicKey: undefined | string;
@@ -46,6 +47,7 @@ const initialState: State = {
   readOnlyUrl: 'http://127.0.0.1:40403',
   validatorUrl: 'http://127.0.0.1:40403',
   nonce: undefined,
+  identities: {},
   registryUri: undefined,
   privateKey: undefined,
   publicKey: undefined,
@@ -70,7 +72,20 @@ const reducer = (
         privateKey: action.payload.privateKey,
       };
     }
+<<<<<<< HEAD
     case 'INIT_COMPLETED': {
+=======
+    case "ADD_IDENTITY": {
+      return {
+        ...state,
+        identities: {
+          ...state.identities,
+          [action.payload.pubKey]: action.payload.registryUri
+        }
+      };
+    }
+    case "INIT_COMPLETED": {
+>>>>>>> Identity mockups, not working yet
       return {
         ...state,
         nonce: action.payload.nonce,

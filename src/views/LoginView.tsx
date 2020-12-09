@@ -1,7 +1,8 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import * as rchainToolkit from 'rchain-toolkit';
-import React, { useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 import {
   IonContent,
   IonItem,
@@ -14,27 +15,35 @@ import {
   IonRow,
   IonCol,
   IonToggle,
+  IonLoading
 } from '@ionic/react';
 import './LoginView.scoped.css';
 
-import { ReactComponent as GhostLogo } from '../assets/ghost.svg';
+import NoIdentityScreen from "../components/identity/NoIdentityScreen";
+//import CreateIdentityScreen from "../components/identity/CreateIdentityScreen";
 import { ReactComponent as RChainLogo } from '../assets/rchain.svg';
 
+
 interface LoginViewProps {
-  init: (a: { registryUri: string; privateKey: string }) => void;
+  action: string;
+  init: (a: { registryUri: string, privateKey: string }) => void;
 }
-const LoginViewComponent: React.FC<LoginViewProps> = props => {
+const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
+  const history = useHistory();
   const [privateKey, setPrivateKey] = useState<string>('');
   const [registryUri, setRegstryUri] = useState<string>('');
 
   const [devLogin, setDevLogin] = useState(false);
 
-  const slides = React.useRef(null);
+  const [maxSlide, setMaxSlide] = useState<string>('');
 
   const slideOpts: Record<string, unknown> = {
     initialSlide: 0,
     speed: 400,
   };
+
+  const CreateIdentityScreen = React.lazy(() => import("../components/identity/CreateIdentityScreen"));
+  const RestoreIdentityScreen = React.lazy(() => import("../components/identity/RestoreIdentityScreen"));
 
   return (
     <IonContent>
@@ -45,78 +54,56 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
         onIonSlideDidChange={(event: any) => console.info(event)}
       >
         <IonSlide>
-          {devLogin ? (
-            <React.Fragment>
-              <IonGrid>
-                <IonRow>
-                  <IonItem>
-                    <IonLabel position="floating">Address</IonLabel>
-                    <IonInput
-                      placeholder="address"
-                      type="text"
-                      value={registryUri}
-                      onIonChange={e =>
-                        setRegstryUri((e.target as HTMLInputElement).value)
-                      }
-                    />
-                  </IonItem>
-                </IonRow>
-                <IonRow>
-                  <IonItem>
-                    <IonLabel position="floating">Private key</IonLabel>
-                    <IonInput
-                      placeholder="Private key"
-                      type="password"
-                      value={privateKey}
-                      onIonChange={e =>
-                        setPrivateKey((e.target as HTMLInputElement).value)
-                      }
-                    />
-                  </IonItem>
-                </IonRow>
-                <IonRow>
-                  <IonItem>
-                    <IonButton
-                      disabled={!privateKey || !registryUri}
-                      onClick={() => {
-                        props.init({
-                          registryUri,
-                          privateKey,
-                        });
-                      }}
-                    >
-                      Load
-                    </IonButton>
-                  </IonItem>
-                </IonRow>
-              </IonGrid>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <IonGrid>
-                <GhostLogo />
-                <IonRow>
-                  <IonCol>
-                    <IonLabel>You have no identity</IonLabel>
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol>
-                    <IonButton color="none" className="ActionButton">
-                      Create New
-                    </IonButton>
-                  </IonCol>
-                </IonRow>
-                <IonRow>
-                  <IonCol>
-                    <IonButton color="none" className="ActionButton">
-                      Import Seed
-                    </IonButton>
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </React.Fragment>
-          )}
+          {
+            devLogin
+              ?
+              <React.Fragment>
+                <IonGrid>
+                  <IonRow>
+                    <IonItem>
+                      <IonLabel position="floating">Address</IonLabel>
+                      <IonInput
+                        placeholder="address"
+                        type="text"
+                        value={registryUri}
+                        onIonChange={(e) => setRegstryUri((e.target as HTMLInputElement).value)}
+                      ></IonInput>
+                    </IonItem>
+                  </IonRow>
+                  <IonRow>
+                    <IonItem>
+                      <IonLabel position="floating">Private key</IonLabel>
+                      <IonInput
+                        placeholder="Private key"
+                        type="password"
+                        value={privateKey}
+                        onIonChange={(e) => setPrivateKey((e.target as HTMLInputElement).value)}
+                      ></IonInput>
+                    </IonItem>
+                  </IonRow>
+                  <IonRow>
+                    <IonItem>
+                      <IonButton
+                        disabled={!privateKey || !registryUri}
+                        onClick={() => {
+                          props.init({
+                            registryUri,
+                            privateKey,
+                          });
+                          history.push("/doc");
+                        }}
+                      >
+                        Load
+          </IonButton>
+                    </IonItem>
+                  </IonRow>
+                </IonGrid>
+              </React.Fragment>
+              :
+              <React.Fragment>
+                <NoIdentityScreen />
+              </React.Fragment>
+          }
           <div className="BottomBar">
             <IonItem>
               <IonLabel>Dev Login: </IonLabel>
@@ -128,9 +115,24 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
             </IonItem>
           </div>
         </IonSlide>
-        <IonSlide>
-          <RChainLogo className="BG" />
-        </IonSlide>
+        {
+          props.action === "new" ?
+            <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+              <IonSlide>
+                <CreateIdentityScreen />
+              </IonSlide>
+            </Suspense>
+            : undefined
+        }
+        {
+          props.action === "restore" ?
+            <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+              <IonSlide>
+                <RestoreIdentityScreen />
+              </IonSlide>
+            </Suspense>
+            : undefined
+        }
       </IonSlides>
     </IonContent>
   );
