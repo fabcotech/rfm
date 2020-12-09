@@ -6,8 +6,12 @@ import {
   IonLabel,
   IonItemSliding,
   IonItemOptions,
+<<<<<<< HEAD
   IonItemOption,
   IonButton,
+=======
+  IonItemOption
+>>>>>>> Prettier
 } from '@ionic/react';
 
 import { useHistory } from 'react-router';
@@ -54,10 +58,14 @@ const BagItemComponent: React.FC<BagItemProps> = ({
       >
         <div className="IconContainer">
 <<<<<<< HEAD
+<<<<<<< HEAD
           <IonIcon icon={documentIcon} size="large" />
 =======
           <IonIcon icon={documentIcon} color="secondary" size="large"/>
 >>>>>>> Added qr code scanner, yarn.lock
+=======
+          <IonIcon icon={documentIcon} color="secondary" size="large" />
+>>>>>>> Prettier
         </div>
         <IonLabel className="ion-text-wrap">
           <h2>{id}</h2>
