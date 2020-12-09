@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { Suspense, useEffect }  from 'react';
+import React, { Suspense, useEffect, useState }  from 'react';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import {
   IonContent,
@@ -9,15 +9,27 @@ import {
   IonTitle,
   IonToolbar,
   IonRouterOutlet,
-  IonLoading
+  IonLoading,
+  IonButton,
+  IonIcon,
+  IonCard,
+  IonItem,
+  IonLabel,
+  IonCardContent,
+  IonSlides,
+  IonSlide
 } from '@ionic/react';
-import './App.css';
+import './App.scss';
 import { Bag, State } from './store';
 
 import { Plugins } from "@capacitor/core";
 
 import {ReactComponent as RChainLogo} from './assets/rchain.svg';
 import {ReactComponent as Waves} from './assets/wave.svg';
+
+import IdentityScreen from './components/identity/IdentityScreen';
+
+import { personCircle, closeCircleOutline, pin } from 'ionicons/icons';
 
 const { Device } = Plugins;
 
@@ -32,6 +44,14 @@ interface AppProps {
   setPlatform: (platform: string) => void;
 }
 const AppComponent: React.FC<AppProps> = (props) => {
+  const redfill = React.useRef(null);
+  const slider = React.useRef(null);
+  const [showIdentity, setShowIdentity] = useState(false);
+
+  const ToggleIdentityView = () => {
+    setShowIdentity(!showIdentity);
+    console.info(showIdentity);
+  }
 
   useEffect(() => {
     Device.getInfo().then(info => {
@@ -40,11 +60,43 @@ const AppComponent: React.FC<AppProps> = (props) => {
     });
   }, []);
 
+  const slides = React.useRef(null);
+
+  const slideOpts: Record<string, unknown> = {
+    initialSlide: 0,
+    speed: 400
+  };
+
+  const onSlideChanged = (event: any)=> {
+    event.target.getActiveIndex().then((value: any) => {console.info(value);});
+  };
+
   if (!props.registryUri) {
     return (
-      <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-        <LoginView />
-      </Suspense>
+      <Router>
+        <IonRouterOutlet id="main">
+              <Route exact path="/user" render={(rprops) => (
+                <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                  <LoginView action="user" key={rprops.location.pathname}/>
+                </Suspense>
+              )} />
+              <Route exact path="/user/new" render={(rprops) => (
+                <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                  <LoginView action="new" key={rprops.location.pathname}/>
+                </Suspense>
+              )} />
+              <Route exact path="/user/restore" render={(rprops) => (
+                <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                  <LoginView action="restore" key={rprops.location.pathname}/>
+                </Suspense>
+              )} />
+              <Route path="*" render={(rprops) => (
+                <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+                  <LoginView action="user" key={rprops.location.pathname}/>
+                </Suspense>
+              )} />
+        </IonRouterOutlet>
+      </Router>
     )
   }
   
@@ -54,25 +106,54 @@ const AppComponent: React.FC<AppProps> = (props) => {
         <IonHeader no-border class="ion-no-border" className="RoundedHeader">
           <IonToolbar color="primary" class="noSafeAreaPaddingTop">
             <IonTitle>RChain File Manager</IonTitle>
+            <IonButton slot="end" icon-only color="none" class="ProfileButton" onClick={() => {
+              ToggleIdentityView();
+            }}>
+              { showIdentity ? 
+              <IonIcon icon={closeCircleOutline} size="large"/>
+              : <IonIcon icon={personCircle} size="large"/>
+              }
+            </IonButton>
           </IonToolbar>
+          <div className={showIdentity ? "RedFill show" : "RedFill hide"} ref={redfill} >
+            <IonContent class="IdentityBG">
+            <div className={showIdentity ? "ProfilePanel show" : "ProfilePanel hide"}>
+                <div className="ArrowLeft"/>
+                <div className="ArrowRight"/>
+                <IonSlides
+                class="IdentityList"
+                options={slideOpts}
+                pager={true}
+                onIonSlideDidChange={onSlideChanged}
+                >
+            <IonSlide className="IdentitySlide">
+              <IdentityScreen />
+            </IonSlide>
+            <IonSlide>
+              <IdentityScreen />
+            </IonSlide>
+            </IonSlides>
+            </div>
+          </IonContent>
+          </div>
           <Waves className="Waves"/>
         </IonHeader>
         <IonContent>
           <RChainLogo className="BackgroundLogo"/>
           <IonRouterOutlet id="main">
-            <Route exact path="/doc/show/:registryUri/:bagId?" render={(props) => (
+            <Route exact path="/doc/show/:registryUri/:bagId?" render={(rprops) => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.match.params.registryUri} bagId={props.match.params.bagId} action="show" />
+                <DockListView registryUri={rprops.match.params.registryUri} bagId={rprops.match.params.bagId} action="show" key={rprops.location.hash}/>
               </Suspense>
             )} />
-            <Route exact path="/doc/" render={() => (
+            <Route exact path="/doc/" render={(rprops) => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.registryUri as string} action="list" />
+                <DockListView registryUri={props.registryUri as string} action="list" key={rprops.location.hash}/>
               </Suspense>
             )} />
-            <Route exact path="/doc/upload" render={() => (
+            <Route exact path="/doc/upload" render={(rprops) => (
               <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.registryUri as string} action="upload" />
+                <DockListView registryUri={props.registryUri as string} action="upload" key={rprops.location.hash}/>
               </Suspense>
             )} />
             <Route path="/" render={({ location }) => 

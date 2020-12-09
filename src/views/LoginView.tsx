@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
+import { useHistory } from 'react-router';
 
 import {
   IonContent,
@@ -13,28 +14,36 @@ import {
   IonGrid,
   IonRow,
   IonCol,
-  IonToggle
+  IonToggle,
+  IonLoading
 } from '@ionic/react';
 import './LoginView.scoped.css';
 
-import {ReactComponent as GhostLogo} from '../assets/ghost.svg';
+import NoIdentityScreen from "../components/identity/NoIdentityScreen";
+//import CreateIdentityScreen from "../components/identity/CreateIdentityScreen";
 import {ReactComponent as RChainLogo} from '../assets/rchain.svg';
 
+
 interface LoginViewProps {
+  action: string;
   init: (a: { registryUri: string, privateKey: string }) => void;
 }
 const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
+  const history = useHistory();
   const [privateKey, setPrivateKey] = useState<string>('');
   const [registryUri, setRegstryUri] = useState<string>('');
 
   const [devLogin, setDevLogin] = useState(false);
 
-  const slides = React.useRef(null);
+  const [maxSlide, setMaxSlide] = useState<string>('');
 
   const slideOpts: Record<string, unknown> = {
     initialSlide: 0,
     speed: 400
   };
+
+  const CreateIdentityScreen = React.lazy(() => import("../components/identity/CreateIdentityScreen"));
+  const RestoreIdentityScreen = React.lazy(() => import("../components/identity/RestoreIdentityScreen"));
 
   return (
     <IonContent>
@@ -80,7 +89,8 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
               props.init({
                 registryUri,
                 privateKey,
-              })
+              });
+              history.push("/doc");
             }}
           >
             Load
@@ -91,24 +101,7 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
         </React.Fragment>
         :
         <React.Fragment>
-          <IonGrid>
-            <GhostLogo />
-            <IonRow>
-              <IonCol>
-                <IonLabel>You have no identity</IonLabel>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonButton color="none" className="ActionButton">Create New</IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol>
-                <IonButton color="none" className="ActionButton">Import Seed</IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+          <NoIdentityScreen />
           </React.Fragment>
           }
           <div className="BottomBar">
@@ -118,9 +111,24 @@ const LoginViewComponent: React.FC<LoginViewProps> = (props) => {
           </IonItem>
           </div>
         </IonSlide>
-        <IonSlide>
-          <RChainLogo className="BG"/>
-        </IonSlide>
+        {
+          props.action === "new" ?
+          <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+            <IonSlide>
+              <CreateIdentityScreen />
+            </IonSlide>
+          </Suspense>
+          : undefined
+        }
+        {
+          props.action === "restore" ?
+          <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+            <IonSlide>
+              <RestoreIdentityScreen />
+            </IonSlide>
+          </Suspense>
+          : undefined
+        }
       </IonSlides>
     </IonContent>
   )

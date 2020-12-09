@@ -10,6 +10,7 @@ export interface State {
 
   // rchain-token contract
   nonce: undefined | string;
+  identities: { [pubKey: string]: string }; //Map of identities <pubkey, regUri>
   registryUri: undefined | string;
 
   privateKey: undefined | string;
@@ -40,6 +41,7 @@ const initialState: State = {
   readOnlyUrl: "https://observer.testnet.rchain.coop",
   validatorUrl: "https://node2.testnet.rchain-dev.tk",
   nonce: undefined,
+  identities: {},
   registryUri: undefined,
   privateKey: undefined,
   bags: {},
@@ -60,6 +62,15 @@ const reducer = (
         ...state,
         registryUri: action.payload.registryUri,
         privateKey: action.payload.privateKey,
+      };
+    }
+    case "ADD_IDENTITY": {
+      return {
+        ...state,
+        identities: {
+          ...state.identities,
+          [action.payload.pubKey]: action.payload.registryUri
+        }
       };
     }
     case "INIT_COMPLETED": {
