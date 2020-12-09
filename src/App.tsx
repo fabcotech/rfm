@@ -1,6 +1,7 @@
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import React, { Suspense, useEffect }  from 'react';
+import React, { Suspense, useEffect } from 'react';
+import * as rchainToolkit from 'rchain-toolkit';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 import {
   IonContent,
@@ -9,15 +10,15 @@ import {
   IonTitle,
   IonToolbar,
   IonRouterOutlet,
-  IonLoading
+  IonLoading,
 } from '@ionic/react';
 import './App.css';
 import { Bag, State } from './store';
 
-import { Plugins } from "@capacitor/core";
+import { Plugins } from '@capacitor/core';
 
-import {ReactComponent as RChainLogo} from './assets/rchain.svg';
-import {ReactComponent as Waves} from './assets/wave.svg';
+import { ReactComponent as RChainLogo } from './assets/rchain.svg';
+import { ReactComponent as Waves } from './assets/wave.svg';
 
 const { Device } = Plugins;
 
@@ -26,13 +27,12 @@ const DockListView = React.lazy(() => import('./views/DocListView'));
 
 interface AppProps {
   isLoading: boolean;
-  registryUri: undefined | string;
-  bags: { [id: string]: Bag }
-  init: (a: { registryUri: string, privateKey: string }) => void;
+  registryUri: undefined | string;
+  bags: { [id: string]: Bag };
+  init: (a: { registryUri: string; privateKey: string }) => void;
   setPlatform: (platform: string) => void;
 }
-const AppComponent: React.FC<AppProps> = (props) => {
-
+const AppComponent: React.FC<AppProps> = props => {
   useEffect(() => {
     Device.getInfo().then(info => {
       console.log(info);
@@ -42,12 +42,12 @@ const AppComponent: React.FC<AppProps> = (props) => {
 
   if (!props.registryUri) {
     return (
-      <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
+      <Suspense fallback={<IonLoading isOpen={true} />}>
         <LoginView />
       </Suspense>
-    )
+    );
   }
-  
+
   return (
     <Router>
       <IonPage id="home-page">
@@ -55,65 +55,99 @@ const AppComponent: React.FC<AppProps> = (props) => {
           <IonToolbar color="primary" class="noSafeAreaPaddingTop">
             <IonTitle>RChain File Manager</IonTitle>
           </IonToolbar>
-          <Waves className="Waves"/>
+          <Waves className="Waves" />
         </IonHeader>
         <IonContent>
-          <RChainLogo className="BackgroundLogo"/>
+          <RChainLogo className="BackgroundLogo" />
           <IonRouterOutlet id="main">
-            <Route exact path="/doc/show/:registryUri/:bagId?" render={(props) => (
-              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.match.params.registryUri} bagId={props.match.params.bagId} action="show" />
-              </Suspense>
-            )} />
-            <Route exact path="/doc/" render={() => (
-              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.registryUri as string} action="list" />
-              </Suspense>
-            )} />
-            <Route exact path="/doc/upload" render={() => (
-              <Suspense fallback={<IonLoading isOpen={true}></IonLoading>}>
-                <DockListView registryUri={props.registryUri as string} action="upload" />
-              </Suspense>
-            )} />
-            <Route path="/" render={({ location }) => 
-              <Redirect to={{
-                pathname: '/doc',
-                state: { from: location },
-              }} />} exact />
+            <Route
+              exact
+              path="/doc/show/:registryUri/:bagId?"
+              render={props => (
+                <Suspense fallback={<IonLoading isOpen={true} />}>
+                  <DockListView
+                    registryUri={props.match.params.registryUri}
+                    bagId={props.match.params.bagId}
+                    action="show"
+                  />
+                </Suspense>
+              )}
+            />
+            <Route
+              exact
+              path="/doc/"
+              render={() => (
+                <Suspense fallback={<IonLoading isOpen={true} />}>
+                  <DockListView
+                    registryUri={props.registryUri as string}
+                    action="list"
+                  />
+                </Suspense>
+              )}
+            />
+            <Route
+              exact
+              path="/doc/upload"
+              render={() => (
+                <Suspense fallback={<IonLoading isOpen={true} />}>
+                  <DockListView
+                    registryUri={props.registryUri as string}
+                    action="upload"
+                  />
+                </Suspense>
+              )}
+            />
+            <Route
+              path="/"
+              render={({ location }) => (
+                <Redirect
+                  to={{
+                    pathname: '/doc',
+                    state: { from: location },
+                  }}
+                />
+              )}
+              exact
+            />
           </IonRouterOutlet>
-        
         </IonContent>
       </IonPage>
     </Router>
   );
 };
 
-export const App = connect((state: State) => {
-  return {
-    registryUri: state.registryUri,
-    bags: state.bags,
-    isLoading: state.isLoading,
+export const App = connect(
+  (state: State) => {
+    return {
+      registryUri: state.registryUri,
+      bags: state.bags,
+      isLoading: state.isLoading,
+    };
+  },
+  (dispatch: Dispatch) => {
+    return {
+      init: (a: { registryUri: string; privateKey: string }) => {
+        dispatch({
+          type: 'INIT',
+          payload: {
+            privateKey: a.privateKey,
+            publicKey: rchainToolkit.utils.publicKeyFromPrivateKey(
+              a.privateKey as string
+            ),
+            registryUri: a.registryUri,
+          },
+        });
+      },
+      setPlatform: (platform: string) => {
+        dispatch({
+          type: 'SET_PLATFORM',
+          payload: {
+            platform: platform,
+          },
+        });
+      },
+    };
   }
-}, (dispatch: Dispatch) => {
-  return {
-    init: (a: { registryUri: string, privateKey: string }) => {
-      dispatch({
-        type: 'INIT',
-        payload: {
-          privateKey: a.privateKey,
-          registryUri: a.registryUri,
-        }
-      })
-    },
-    setPlatform: (platform: string) => {
-      dispatch({
-        type: 'SET_PLATFORM',
-        payload: {
-          platform: platform
-        }
-      })
-    }
-  }
-})(AppComponent);
+)(AppComponent);
 
 export default App;

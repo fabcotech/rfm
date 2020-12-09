@@ -1,6 +1,6 @@
-import React from "react";
-import { Dispatch } from "redux";
-import { connect } from "react-redux";
+import React from 'react';
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import {
   IonHeader,
   IonContent,
@@ -12,21 +12,31 @@ import {
   IonIcon,
   IonButtons,
   IonButton,
-} from "@ionic/react";
-import { document as documentIcon, cloudUpload } from "ionicons/icons";
-import { Plugins } from "@capacitor/core";
-import { useHistory, RouteComponentProps } from "react-router";
+} from '@ionic/react';
+import { document as documentIcon, cloudUpload } from 'ionicons/icons';
+import { Plugins } from '@capacitor/core';
+import { useHistory, RouteComponentProps } from 'react-router';
 
-import generateSignature from "../utils/generateSignature";
-import generateSignatureFromHash from "../utils/generateSignatureFromHash";
-import { Bag, State, Document } from "../store";
+import generateSignature from '../utils/generateSignature';
+import generateSignatureFromHash from '../utils/generateSignatureFromHash';
+import {
+  Bag,
+  State,
+  Document,
+  getBags,
+  getBagsData,
+  getPublicKey,
+  getPrivateKey,
+  Signature,
+} from '../store';
 
-import "./ModalUploadDocument.scoped.css";
+import './ModalUploadDocument.scoped.css';
 import replacer from '../utils/replacer';
+import checkSignature from 'src/utils/checkSignature';
 
 const { FileSelector } = Plugins;
 
-const { blake2b } = require("blakejs");
+const { blake2b } = require('blakejs');
 
 //Instead of deprecated withRouter
 export const withHistory = (Component: any) => {
@@ -39,6 +49,7 @@ export const withHistory = (Component: any) => {
 
 interface ModalUploadDocumentProps extends RouteComponentProps {
   privateKey: string;
+  publicKey: string;
   bags: { [bagId: string]: Bag };
   upload: (bagId: string, document: Document) => void;
   platform: string;
@@ -57,9 +68,9 @@ class ModalUploadDocumentComponent extends React.Component<
     super(props);
     this.state = {
       document: undefined,
-      bagId: "",
+      bagId: '',
       dropErrors: [],
-      platform: "",
+      platform: '',
     };
   }
   dropEl: HTMLTextAreaElement | undefined = undefined;
@@ -78,7 +89,7 @@ class ModalUploadDocumentComponent extends React.Component<
     const that = this;
     let selectedFile = await FileSelector.fileSelector({
       multiple_selection: false,
-      ext: [".jpg", ".png", ".pdf", ".jpeg"],
+      ext: ['.jpg', '.png', '.pdf', '.jpeg'],
     });
 
     const paths = JSON.parse(selectedFile.paths);
@@ -91,20 +102,27 @@ class ModalUploadDocumentComponent extends React.Component<
 
     const asbase: string = (await this.blobToBase64(fileBlob)) as string;
 
+    const document: Document = {
+      name: fileName,
+      mimeType: fileBlob.type,
+      data: Buffer.from(asbase.split(',')[1]).toString('base64'),
+      signatures: {},
+    };
+    const signature: Signature = {
+      publicKey: that.props.publicKey,
+      signature: generateSignature(document, that.props.privateKey),
+    };
+    document.signatures['0'] = signature;
+
     that.setState({
-      document: {
-        name: fileName,
-        mimeType: fileBlob.type,
-        data: asbase.split(",")[1],
-        signatures: []
-      },
+      document: document,
     });
   };
 
   saveRef = (el: HTMLTextAreaElement) => {
     this.dropEl = el;
     if (this.dropEl) {
-      this.dropEl.addEventListener("drop", (e: DragEvent) => {
+      this.dropEl.addEventListener('drop', (e: DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
         this.onDrop(e as any);
@@ -119,13 +137,13 @@ class ModalUploadDocumentComponent extends React.Component<
     var files = e.dataTransfer.files;
     if (!files[0]) {
       this.setState({
-        dropErrors: ["Please drop a file"],
+        dropErrors: ['Please drop a file'],
       });
       return;
     }
     if (files[1]) {
       this.setState({
-        dropErrors: ["Please drop only one file"],
+        dropErrors: ['Please drop only one file'],
       });
       return;
     }
@@ -134,47 +152,36 @@ class ModalUploadDocumentComponent extends React.Component<
     const file = files[0];
     var r = new FileReader();
     try {
-      r.onloadend = function (e) {
-        if (!e || !e.target || typeof r.result !== "string") {
+      r.onloadend = function(e) {
+        if (!e || !e.target || typeof r.result !== 'string') {
           return;
         }
 
+        const document: Document = {
+          name: file.name,
+          mimeType: file.type,
+          data: Buffer.from(r.result.split(',')[1]).toString('base64'),
+          signatures: {},
+        };
+        const signature: Signature = {
+          publicKey: that.props.publicKey,
+          signature: generateSignature(document, that.props.privateKey),
+        };
+        document.signatures['0'] = signature;
+        console.log('verified', checkSignature(document, '0'));
+
         that.setState({
-          document: {
-            name: file.name,
-            mimeType: file.type,
-            data: r.result.split(",")[1],
-            signatures: []
-          },
+          document: document,
         });
       };
     } catch (e) {
-      this.setState({ dropErrors: ["Error parsing file"] });
+      this.setState({ dropErrors: ['Error parsing file'] });
     }
 
     r.readAsDataURL(file);
   };
 
   render() {
-    if (this.state.document) {
-      console.log("signature");
-      const s = generateSignature(
-        new Uint8Array(
-          Buffer.from(JSON.stringify(this.state.document, replacer), "utf8")
-        ),
-        this.props.privateKey
-      );
-      console.log(s);
-      const bufferToSign = Buffer.from(
-        JSON.stringify(this.state.document, replacer),
-        "utf8"
-      );
-      const uInt8Array = new Uint8Array(bufferToSign);
-      const blake2bHash = blake2b(uInt8Array, 0, 32);
-      const s2 = generateSignatureFromHash(blake2bHash, this.props.privateKey);
-      console.log("signature (2)");
-      console.log(s2);
-    }
     return (
       <>
         <IonHeader>
@@ -183,13 +190,13 @@ class ModalUploadDocumentComponent extends React.Component<
             <IonButtons slot="end">
               <IonButton
                 onClick={() => {
-                  this.props.history.replace("/doc", { direction: "back" });
+                  this.props.history.replace('/doc', { direction: 'back' });
                 }}
               >
                 Close
               </IonButton>
             </IonButtons>
-            <IonIcon icon={cloudUpload} slot="start" size="large"></IonIcon>
+            <IonIcon icon={cloudUpload} slot="start" size="large" />
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">
@@ -199,21 +206,23 @@ class ModalUploadDocumentComponent extends React.Component<
               placeholder="document ID"
               type="text"
               value={this.state.bagId}
-              onIonChange={(e) =>
+              onIonChange={e =>
                 this.setState({ bagId: (e.target as HTMLInputElement).value })
               }
-            ></IonInput>
+            />
           </IonItem>
-          {this.props.platform === "web" ? (
-            <div className={`drop-area ${!!this.state.document ? "hide" : ""}`}>
+          {this.props.platform === 'web' ? (
+            <div className={`drop-area ${!!this.state.document ? 'hide' : ''}`}>
               <textarea ref={this.saveRef} />
               <span>
                 <IonIcon icon={documentIcon} size="large" /> Drop your file
               </span>
             </div>
-          ) : undefined}
-          {this.props.platform === "ios" ||
-          this.props.platform === "android" ? (
+          ) : (
+            undefined
+          )}
+          {this.props.platform === 'ios' ||
+          this.props.platform === 'android' ? (
             <IonButton
               onClick={() => {
                 this.nativeFilePicker();
@@ -221,7 +230,9 @@ class ModalUploadDocumentComponent extends React.Component<
             >
               Pick a document
             </IonButton>
-          ) : undefined}
+          ) : (
+            undefined
+          )}
           {this.state.document ? (
             <div className="document">
               <div className="left">
@@ -232,17 +243,17 @@ class ModalUploadDocumentComponent extends React.Component<
                 <h5>{this.state.document.mimeType}</h5>
               </div>
             </div>
-          ) : undefined}
+          ) : (
+            undefined
+          )}
           {this.state.document ? (
             <IonItem>
               <IonButton
                 disabled={!this.state.document || !this.state.bagId}
                 size="small"
                 onClick={() => {
-                  this.props.upload(
-                    this.state.bagId,
-                    this.state.document as Document
-                  );
+                  this.props.upload(this.state.bagId, this.state
+                    .document as Document);
                 }}
               >
                 Upload
@@ -257,7 +268,9 @@ class ModalUploadDocumentComponent extends React.Component<
                 Cancel
               </IonButton>
             </IonItem>
-          ) : undefined}
+          ) : (
+            undefined
+          )}
         </IonContent>
       </>
     );
@@ -267,9 +280,10 @@ class ModalUploadDocumentComponent extends React.Component<
 const ModalUploadDocument = connect(
   (state: State) => {
     return {
-      privateKey: state.privateKey as string,
-      bags: state.bags,
-      bagsData: state.bagsData,
+      privateKey: getPrivateKey(state) as string,
+      bags: getBags(state),
+      bagsData: getBagsData(state),
+      publicKey: getPublicKey(state) as string,
       platform: state.platform,
     };
   },
@@ -277,7 +291,7 @@ const ModalUploadDocument = connect(
     return {
       upload: (bagId: string, document: Document) => {
         dispatch({
-          type: "UPLOAD",
+          type: 'UPLOAD',
           payload: {
             bagId: bagId,
             document: document,

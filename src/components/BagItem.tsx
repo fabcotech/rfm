@@ -6,8 +6,9 @@ import {
   IonLabel,
   IonItemSliding,
   IonItemOptions,
-  IonItemOption
-  } from '@ionic/react';
+  IonItemOption,
+  IonButton,
+} from '@ionic/react';
 
 import { useHistory } from 'react-router';
 import { Bag } from '../store';
@@ -19,27 +20,49 @@ interface BagItemProps {
   bag: Bag;
   registryUri: string;
   id: string;
+  awaitsSignature: boolean;
 }
 
-const BagItemComponent: React.FC<BagItemProps> = ({ bag, registryUri, id }) => {
+const BagItemComponent: React.FC<BagItemProps> = ({
+  awaitsSignature,
+  registryUri,
+  id,
+}) => {
   const history = useHistory();
   return (
     <IonItemSliding>
       <IonItemOptions side="end">
-        <IonItemOption color="secondary" onClick={() => console.log('favorite clicked')}><IonIcon icon={create} size="large"></IonIcon></IonItemOption>
-        <IonItemOption color="danger" onClick={() => console.log('share clicked')}><IonIcon icon={trash} size="large"></IonIcon></IonItemOption>
+        <IonItemOption
+          color="secondary"
+          onClick={() => console.log('favorite clicked')}
+        >
+          <IonIcon icon={create} size="large" />
+        </IonItemOption>
+        <IonItemOption
+          color="danger"
+          onClick={() => console.log('share clicked')}
+        >
+          <IonIcon icon={trash} size="large" />
+        </IonItemOption>
       </IonItemOptions>
-      <IonItem detail={false} button onClick={() => {
-        history.push("/doc/show/" + registryUri + "/" + id);
-      }}>
+      <IonItem
+        detail={false}
+        button
+        onClick={() => {
+          history.push('/doc/show/' + registryUri + '/' + id);
+        }}
+      >
         <div className="IconContainer">
-          <IonIcon icon={documentIcon} size="large"/>
+          <IonIcon icon={documentIcon} size="large" />
         </div>
         <IonLabel className="ion-text-wrap">
-          <h2>
-            {id}
-          </h2>
+          <h2>{id}</h2>
         </IonLabel>
+        {awaitsSignature && (
+          <IonButton color="secondary" size="small">
+            Needs signature
+          </IonButton>
+        )}
       </IonItem>
     </IonItemSliding>
   );
@@ -47,7 +70,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({ bag, registryUri, id }) => {
 
 const BagItem = connect(
   undefined,
-  undefined,
+  undefined
 )(BagItemComponent);
 
 export default BagItem;
