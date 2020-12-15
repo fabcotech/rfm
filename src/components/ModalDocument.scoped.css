@@ -26,3 +26,24 @@
   right: 0;
   margin: 0.5em;
 }
+
+.signature-line {
+  display: flex;
+}
+.signature-ok, .signature-ko {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  padding: 5px;
+  color: #fff;
+  margin-right: 10px;
+}
+.signature-ok {
+  background: #4B5;
+}
+.signature-ko {
+  background: #B45;
+}

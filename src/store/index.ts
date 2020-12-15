@@ -121,12 +121,6 @@ const reducer = (
         searchText: action.payload.searchText,
       };
     }
-    case 'UPLOAD_BAG_DATA_COMPLETED': {
-      return {
-        ...state,
-        nonce: action.payload.nonce,
-      };
-    }
     default: {
       return state;
     }

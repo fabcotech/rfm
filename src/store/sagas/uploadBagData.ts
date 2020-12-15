@@ -3,7 +3,7 @@ import * as rchainToolkit from 'rchain-toolkit';
 import { deflate } from 'pako';
 import { v4 } from 'uuid';
 
-import { Document, store, State } from '../../store/';
+import { Document, store, State } from '../';
 
 import replacer from '../../utils/replacer';
 
@@ -17,9 +17,7 @@ const uploadBagData = function*(action: {
   const document = action.payload.document;
   const state: State = store.getState();
 
-  const publicKey = rchainToolkit.utils.publicKeyFromPrivateKey(
-    state.privateKey as string
-  );
+  const publicKey = state.publicKey;
 
   const asJson = JSON.stringify(
     {
@@ -31,7 +29,6 @@ const uploadBagData = function*(action: {
     replacer
   );
   const gzipped = Buffer.from(deflate(asJson)).toString('base64');
-  const newNonce = v4().replace(/-/g, '');
   const payload = {
     publicKey: publicKey,
     newBagId: action.payload.bagId,
@@ -62,7 +59,7 @@ const uploadBagData = function*(action: {
     timestamp,
     term,
     state.privateKey as string,
-    publicKey,
+    publicKey as string,
     1,
     4000000000,
     validAfterBlockNumberResponse
@@ -70,10 +67,8 @@ const uploadBagData = function*(action: {
   yield rchainToolkit.http.deploy(state.validatorUrl, deployOptions);
 
   yield put({
-    type: 'UPLOAD_BAG_DATA_COMPLETED',
-    payload: {
-      nonce: newNonce,
-    },
+    type: 'PURCHASE_BAG_COMPLETED',
+    payload: {},
   });
 
   return true;

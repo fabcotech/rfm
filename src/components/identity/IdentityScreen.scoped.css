@@ -1,6 +1,6 @@
 ion-button.ActionButton {
-  border: solid 1px var(--ion-color-secondary);
-  border-radius: 1em;
+  border-style: solid;
+  border-color: var(--ion-color-secondary);
   --box-shadow: none;
 }
 

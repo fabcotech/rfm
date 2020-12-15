@@ -10,17 +10,33 @@ export default (document: Document, s: string): boolean => {
   let hash: undefined | Uint8Array;
   let signature: undefined | string;
   let publicKey: undefined | string;
+  const documentWithoutSignature: Document = {
+    data: document.data,
+    mimeType: document.mimeType,
+    name: document.name,
+    signatures: {},
+  };
   if (s === '0') {
-    const documentWithoutSignature: Document = {
-      data: document.data,
-      mimeType: document.mimeType,
-      name: document.name,
-      signatures: {},
-    };
     signature = document.signatures['0'].signature;
     publicKey = document.signatures['0'].publicKey;
     hash = generateHashFromDocument(documentWithoutSignature);
   }
+  if (s === '1') {
+    documentWithoutSignature.signatures = { '0': document.signatures['0'] }
+    signature = document.signatures['1'].signature;
+    publicKey = document.signatures['1'].publicKey;
+    hash = generateHashFromDocument(documentWithoutSignature);
+  }
+  if (s === '2') {
+    documentWithoutSignature.signatures = {
+      '0': document.signatures['0'],
+      '1': document.signatures['1'],
+    }
+    signature = document.signatures['2'].signature;
+    publicKey = document.signatures['2'].publicKey;
+    hash = generateHashFromDocument(documentWithoutSignature);
+  }
+
   if (!publicKey || !signature || !hash) {
     return false;
   }

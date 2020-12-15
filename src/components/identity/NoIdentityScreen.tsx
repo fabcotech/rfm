@@ -13,8 +13,7 @@ import './IdentityScreen.scoped.css';
 
 import { ReactComponent as GhostLogo } from '../../assets/ghost.svg';
 
-const NoIdentityScreenComponent: React.FC = (props) => {
-
+const NoIdentityScreenComponent: React.FC = props => {
   const history = useHistory();
 
   return (
@@ -28,21 +27,33 @@ const NoIdentityScreenComponent: React.FC = (props) => {
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonButton color="none" className="ActionButton" onClick={() => {
-              history.push("/user/new");
-            }}>Create New</IonButton>
+            <IonButton
+              color="none"
+              className="ActionButton with-border"
+              onClick={() => {
+                history.push('/user/new');
+              }}
+            >
+              Create New
+            </IonButton>
           </IonCol>
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonButton color="none" className="ActionButton" onClick={() => {
-              history.push("/user/restore");
-            }}>Import Seed</IonButton>
+            <IonButton
+              color="none"
+              className="ActionButton with-border"
+              onClick={() => {
+                history.push('/user/restore');
+              }}
+            >
+              Import Seed
+            </IonButton>
           </IonCol>
         </IonRow>
       </IonGrid>
     </IonSlide>
-  )
+  );
 };
 
 export default NoIdentityScreenComponent;

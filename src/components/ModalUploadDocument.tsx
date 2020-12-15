@@ -185,7 +185,7 @@ class ModalUploadDocumentComponent extends React.Component<
     return (
       <>
         <IonHeader>
-          <IonToolbar color="primary">
+          <IonToolbar>
             <IonTitle>Upload to the blockchain</IonTitle>
             <IonButtons slot="end">
               <IonButton
@@ -196,7 +196,6 @@ class ModalUploadDocumentComponent extends React.Component<
                 Close
               </IonButton>
             </IonButtons>
-            <IonIcon icon={cloudUpload} slot="start" size="large" />
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding">

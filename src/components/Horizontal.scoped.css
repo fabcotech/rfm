@@ -7,8 +7,8 @@ ion-searchbar {
 }
 
 ion-button.AddButton {
-  border: solid 1px var(--ion-color-secondary);
-  border-radius: 100%;
+  border-style: solid;
+  border-color: var(--ion-color-secondary);
   --box-shadow: none;
   color: var(--ion-color-secondary);
   margin: auto;

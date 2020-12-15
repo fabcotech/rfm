@@ -1,0 +1,11 @@
+.main-title {
+  font-weight: 600;
+}
+
+.BackgroundLogo {
+  opacity: 0.05;
+  z-index: 1;
+  position: absolute;
+  pointer-events: none;
+  overflow-y: none;
+}

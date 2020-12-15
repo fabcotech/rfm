@@ -122,7 +122,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
           {!props.isLoading
             ? Object.keys(props.bags)
               .filter(bagId => {
-                return true;
+                return bagId !== '0';
               })
               .map(bagId => {
                 return (

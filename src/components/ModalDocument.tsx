@@ -28,6 +28,7 @@ interface ModalDocumentProps {
   bags: State['bags'];
   bagsData: State['bagsData'];
   loadBag: (registryUri: string, bagId: string) => void;
+  reupload: (resitryUri: string, bagId: string) => void;
 }
 
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
@@ -55,11 +56,18 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
       data: Buffer.from(document.data, 'utf-8').toString('base64'),
     };
   }
+  let lastSignature = undefined;
+  if (document && document.signatures) {
+    if (document.signatures["0"]) lastSignature = "0";
+    if (document.signatures["1"]) lastSignature = "1";
+    if (document.signatures["2"]) lastSignature = "2";
+  }
+
   return (
     <>
       <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Document Viewer</IonTitle>
+        <IonToolbar>
+          <IonTitle>{props.bagId}</IonTitle>
           <IonButtons slot="end">
             <IonButton
               onClick={() => {
@@ -69,7 +77,6 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
               Close
             </IonButton>
           </IonButtons>
-          <IonIcon icon={documentIcon} slot="start" size="large" />
         </IonToolbar>
       </IonHeader>
       <IonContent>
@@ -89,14 +96,14 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
             undefined
           )}
         {document === null ? (
-          <span>No document attached</span>
+          <span className="no-document">No document attached</span>
         ) : (
             <div className="qrCodeContainer">
               <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
             </div>
           )}
         {document ? (
-          <div>
+          <div className="ps5">
             <div className="document">
               <div className="left">
                 {['image/png', 'image/jpg', 'image/jpeg'].includes(
@@ -124,20 +131,37 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
             </div>
             {Object.keys(document.signatures).map(s => {
               return (
-                <p>
-                  signature n°{s}:{' '}
+                <p className="signature-line" key={s}>
                   {checkSignature(signedDocument as Document, s)
-                    ? `✓ verified (${document.signatures[s].publicKey.slice(
-                      0,
-                      12
-                    )}…)`
-                    : `✗ invalid (${document.signatures[s].publicKey.slice(
+                    ? <>
+                      <span className="signature-ok">✓</span>
+                      {`signature n°${s} verified (${document.signatures[s].publicKey.slice(
                       0,
                       12
                     )}…)`}
+                    </>
+                    : <>
+                      <span>✗</span>
+                      {`signature n°${s} invalid (${document.signatures[s].publicKey.slice(
+                      0,
+                      12
+                    )}…)`}
+                    </>
+                  }
                 </p>
               );
             })}
+            {
+              [undefined, "0", "1"].includes(lastSignature) &&
+              <IonButton
+                size="default"
+                onClick={() => {
+                  props.reupload(props.registryUri, props.bagId);
+                }}
+              >
+                Re-upload and sign
+              </IonButton>
+            }
           </div>
         ) : (
             undefined
@@ -162,6 +186,15 @@ const ModalDocument = connect(
           payload: {
             registryUri: registryUri,
             bagId: bagId,
+          },
+        });
+      },
+      reupload: (registryUri: string, bagId: string) => {
+        dispatch({
+          type: 'REUPLOAD_BAG_DATA',
+          payload: {
+            bagId: bagId,
+            registryUri: registryUri,
           },
         });
       },

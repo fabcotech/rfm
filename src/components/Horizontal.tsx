@@ -23,7 +23,7 @@ interface HorizontalProps {
   setSearchText: (searchText: string) => void;
 }
 
-const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
+const HorizontalComponent: React.FC<HorizontalProps> = props => {
   const history = useHistory();
 
   const doFetch = () => {
@@ -45,13 +45,31 @@ const HorizontalComponent: React.FC<HorizontalProps> = (props) => {
   return (
     <React.Fragment>
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
-        <IonRefresherContent></IonRefresherContent>
+        <IonRefresherContent />
       </IonRefresher>
-      <IonItem detail={false} no-padding lines="none" className="SearchBarContainer">
-        <IonButton className="AddButton" icon-only slot="start" color="none" onClick={() => {
-          history.push("/doc/upload/");
-        }}>+</IonButton>
-        <IonSearchbar color="none" value={props.searchText} onIonChange={e => props.setSearchText(e.detail.value!)}></IonSearchbar>
+      <IonItem
+        detail={false}
+        no-padding
+        lines="none"
+        className="SearchBarContainer"
+      >
+        <IonButton
+          className="AddButton with-border"
+          icon-only
+          slot="start"
+          color="none"
+          size="default"
+          onClick={() => {
+            history.push('/doc/upload/');
+          }}
+        >
+          <span>upload</span>
+        </IonButton>
+        <IonSearchbar
+          color="none"
+          value={props.searchText}
+          onIonChange={e => props.setSearchText(e.detail.value!)}
+        />
       </IonItem>
     </React.Fragment>
   );
