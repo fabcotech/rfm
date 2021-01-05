@@ -5,14 +5,12 @@ import {
   IonToolbar,
   IonTitle,
   IonLoading,
-  IonIcon,
   IonButtons,
   IonButton,
   IonProgressBar,
 } from '@ionic/react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { document as documentIcon } from 'ionicons/icons';
 import { useHistory } from 'react-router';
 import { Page, pdfjs, Document as PdfDocument } from 'react-pdf';
 
@@ -21,6 +19,7 @@ import checkSignature from '../utils/checkSignature';
 import { State, Document } from '../store';
 
 import './ModalDocument.scoped.css';
+import { addressFromBagId } from 'src/utils/addressFromBagId';
 
 interface ModalDocumentProps {
   registryUri: string;
@@ -34,6 +33,7 @@ interface ModalDocumentProps {
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   props: ModalDocumentProps
 ) => {
+  console.log(props);
   const history = useHistory();
   const pdfcontent64 = '';
   const [page, setPage] = useState<number>();
@@ -48,7 +48,9 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
     return <IonProgressBar color="secondary" type="indeterminate" />;
   };
 
-  const document = props.bagsData[props.registryUri + '/' + props.bagId];
+  const address = addressFromBagId(props.registryUri, props.bagId);
+
+  const document = props.bagsData[address];
   let signedDocument: Document | undefined;
   if (document) {
     signedDocument = {
@@ -119,11 +121,11 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
               </div>
               <div className="right">
                 <h5>
-                  {props.bagsData[props.registryUri + '/' + props.bagId].name}
+                  {props.bagsData[address].name}
                 </h5>
                 <h5>
                   {
-                    props.bagsData[props.registryUri + '/' + props.bagId]
+                    props.bagsData[address]
                       .mimeType
                   }
                 </h5>

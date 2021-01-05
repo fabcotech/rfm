@@ -13,9 +13,10 @@ import { RefresherEventDetail } from '@ionic/core';
 
 import { useHistory } from 'react-router';
 import './Horizontal.scoped.css';
-import { State } from '../store';
+import { getConnected, State } from '../store';
 
 interface HorizontalProps {
+  connected: string;
   privateKey: string;
   registryUri: string;
   searchText: string;
@@ -47,13 +48,17 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
         <IonRefresherContent />
       </IonRefresher>
+      <div>
+        <IonItem class="connectedAs">Connected as {props.connected}</IonItem>
+      </div>
+      <div>
       <IonItem
         detail={false}
         no-padding
         lines="none"
         className="SearchBarContainer"
       >
-        <IonButton
+        { props.connected === 'owner' && <IonButton
           className="AddButton with-border"
           icon-only
           slot="start"
@@ -64,13 +69,14 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
           }}
         >
           <span>upload</span>
-        </IonButton>
+        </IonButton> }
         <IonSearchbar
           color="none"
           value={props.searchText}
           onIonChange={e => props.setSearchText(e.detail.value!)}
         />
       </IonItem>
+      </div>
     </React.Fragment>
   );
 };
@@ -78,6 +84,7 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
 const Horizontal = connect(
   (state: State) => {
     return {
+      connected: getConnected(state),
       privateKey: state.privateKey as string,
       registryUri: state.registryUri as string,
       searchText: state.searchText as string,

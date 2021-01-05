@@ -13,3 +13,7 @@ ion-button.AddButton {
   color: var(--ion-color-secondary);
   margin: auto;
 }
+
+.connectedAs {
+  font-weight: 400;
+}

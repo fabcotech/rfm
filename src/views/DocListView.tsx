@@ -11,7 +11,7 @@ import {
   IonFabButton,
   IonIcon,
 } from '@ionic/react';
-import { Bag, getBags, getDocumentsAwaitingSignature, State } from '../store';
+import { getBags, getConnected, getDocumentsAwaitingSignature, getDocumentsCompleted, State } from '../store';
 import Horizontal from '../components/Horizontal';
 import BagItem from '../components/BagItem';
 import DummyBagItem from '../components/dummy/DummyBagItem';
@@ -40,12 +40,14 @@ type TRouteParams = {
   uri: string; // since it route params
 };
 interface DockListViewProps {
-  action: 'show' | 'list' | 'upload';
+  connected: string;
   registryUri: string;
+  action: 'show' | 'list' | 'upload';
   bagId?: string;
   isLoading: boolean;
   bags: State['bags'];
   documentsAwaitingSignature: State['bagsData'];
+  documentsCompleted: State['bagsData'];
   searchText: string;
   platform: string;
 }
@@ -134,6 +136,9 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
                     awaitsSignature={
                       !!props.documentsAwaitingSignature[bagId]
                     }
+                    completed={
+                      !!props.documentsCompleted[bagId]
+                    }
                   />
                 );
               })
@@ -150,7 +155,9 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
 
 export const DockListView = connect((state: State) => {
   return {
+    connected: getConnected(state),
     bags: getBags(state),
+    documentsCompleted: getDocumentsCompleted(state),
     documentsAwaitingSignature: getDocumentsAwaitingSignature(state),
     isLoading: state.isLoading,
     searchText: state.searchText,

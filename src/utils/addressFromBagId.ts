@@ -1,0 +1,1 @@
+export const addressFromBagId = (registryUri: string, bagId: string) => registryUri + '/' + bagId

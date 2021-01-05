@@ -18,7 +18,7 @@ import {
 } from '@ionic/react';
 import './App.scss';
 import './App.scoped.css';
-import { Bag, State } from './store';
+import { Bag, getConnected, State } from './store';
 
 import { Plugins } from '@capacitor/core';
 
@@ -229,7 +229,7 @@ const AppComponent: React.FC<AppProps> = props => {
 
 export const App = connect(
   (state: State) => {
-    return {
+    return {  
       registryUri: state.registryUri,
       bags: state.bags,
       isLoading: state.isLoading,

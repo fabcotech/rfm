@@ -11,6 +11,7 @@ export interface State {
 
   // rchain-token contract
   nonce: undefined | string;
+  contractPublicKey: undefined | string;
   identities: { [pubKey: string]: string }; //Map of identities <pubkey, regUri>
   registryUri: undefined | string;
 
@@ -18,8 +19,8 @@ export interface State {
   privateKey: undefined | string;
 
   // rchain-token bags and data
-  bags: { [bagId: string]: Bag };
-  bagsData: { [bagAddr: string]: Document };
+  bags: { [address: string]: Bag };
+  bagsData: { [address: string]: Document };
 
   isLoading: boolean;
   searchText: string;
@@ -47,6 +48,7 @@ const initialState: State = {
   readOnlyUrl: 'http://127.0.0.1:40403',
   validatorUrl: 'http://127.0.0.1:40403',
   nonce: undefined,
+  contractPublicKey: undefined,
   identities: {},
   registryUri: undefined,
   privateKey: undefined,
@@ -85,6 +87,7 @@ const reducer = (
       return {
         ...state,
         nonce: action.payload.nonce,
+        contractPublicKey: action.payload.contractPublicKey,
       };
     }
     case 'SET_LOADING': {
@@ -104,11 +107,18 @@ const reducer = (
         ...state,
         bagsData: {
           ...state.bagsData,
-          [action.payload.registryUri + '/' + action.payload.bagId]: action
+          [action.payload.bagId]: action
             .payload.document,
         },
       };
     }
+    case 'SAVE_BAGS_DATA_COMPLETED': {
+      return {
+        ...state,
+        bagsData: action.payload,
+      };
+    }
+
     case 'SET_PLATFORM': {
       return {
         ...state,
@@ -158,6 +168,32 @@ export const getBags = createSelector(
 export const getBagsData = createSelector(
   (state: State) => state,
   (state: State) => state.bagsData
+);
+
+export const getConnected = createSelector(
+  (state: State) => state,
+  (state: State): 'owner' | 'guest' => state.contractPublicKey === state.publicKey ? "owner" : "guest"
+);
+
+export const getDocumentsCompleted = createSelector(
+  getBagsData,
+  getPublicKey,
+  (bagsData: State['bagsData'], publicKey: State['publicKey']) => {
+    const documentsComplete: { [bagId: string]: Document } = {};
+    Object.keys(bagsData).forEach(bagId => {
+      const document = bagsData[bagId];
+      if (
+        document.signatures['0'] &&
+        document.signatures['1'] &&
+        document.signatures['2']
+      ) {
+        documentsComplete[bagId] = document;
+        return;
+      }
+    });
+
+    return documentsComplete;
+  }
 );
 
 export const getDocumentsAwaitingSignature = createSelector(

@@ -2,7 +2,9 @@ import { takeEvery, put } from 'redux-saga/effects';
 import * as rchainToolkit from 'rchain-toolkit';
 import { inflate } from 'pako';
 
+import { addressFromBagId } from '../../utils/addressFromBagId';
 import { store, State } from '../../store/'
+import { bagIdFromAddress } from 'src/utils/bagIdFromAddress';
 
 const {
   readBagOrTokenDataTerm,
@@ -11,9 +13,16 @@ const {
 const loadBagData = function* (action: { type: string; payload: any}) {
   console.log('load-bag-data', action.payload);
   const state: State = store.getState();
-  if (state.bagsData[action.payload.registryUri + "/" + action.payload.bagId]) {
+  if (state.bagsData[addressFromBagId(action.payload.registryUri, action.payload.bagId)]) {
+    yield put(
+      {
+        type: "SET_LOADING_BAG",
+        payload: false
+      }
+    );
     return true;
   }
+
   yield put(
     {
       type: "SET_LOADING_BAG_DATA",
@@ -40,7 +49,7 @@ const loadBagData = function* (action: { type: string; payload: any}) {
       {
         type: "SAVE_BAG_DATA_COMPLETED",
         payload: {
-          bagId: action.payload.bagId,
+          bagId: addressFromBagId(action.payload.registryUri, action.payload.bagId),
           registryUri: action.payload.registryUri,
           document: fileAsJson,
         }

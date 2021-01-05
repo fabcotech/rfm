@@ -15,18 +15,21 @@ import { Bag } from '../store';
 import './BagItem.scoped.css';
 
 import { document as documentIcon, trash, create } from 'ionicons/icons';
+import { bagIdFromAddress } from '../utils/bagIdFromAddress';
 
 interface BagItemProps {
   bag: Bag;
   registryUri: string;
   id: string;
   awaitsSignature: boolean;
+  completed: boolean;
 }
 
 const BagItemComponent: React.FC<BagItemProps> = ({
-  awaitsSignature,
   registryUri,
   id,
+  awaitsSignature,
+  completed,
 }) => {
   const history = useHistory();
   return (
@@ -49,14 +52,14 @@ const BagItemComponent: React.FC<BagItemProps> = ({
         detail={false}
         button
         onClick={() => {
-          history.push('/doc/show/' + registryUri + '/' + id);
+          history.push('/doc/show/' + id);
         }}
       >
         <div className="IconContainer">
-          <IonIcon icon={documentIcon} color="secondary" size="large" />
+          <IonIcon icon={documentIcon} color={completed ? 'success' : 'secondary'} size="large" />
         </div>
         <IonLabel className="ion-text-wrap">
-          <h2>{id}</h2>
+          <h2>{bagIdFromAddress(id)}</h2>
         </IonLabel>
         {awaitsSignature && (
           <IonButton color="secondary" size="small">

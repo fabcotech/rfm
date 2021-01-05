@@ -29,8 +29,12 @@ interface LoginViewProps {
 }
 const LoginViewComponent: React.FC<LoginViewProps> = props => {
   const history = useHistory();
-  const [privateKey, setPrivateKey] = useState<string>('');
-  const [registryUri, setRegstryUri] = useState<string>('');
+  const [privateKey, setPrivateKey] = useState<string>(
+    ''
+  );
+  const [registryUri, setRegstryUri] = useState<string>(
+    ''
+  );
 
   const [devLogin, setDevLogin] = useState(false);
 
