@@ -33,7 +33,6 @@ interface ModalDocumentProps {
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   props: ModalDocumentProps
 ) => {
-  console.log(props);
   const history = useHistory();
   const pdfcontent64 = '';
   const [page, setPage] = useState<number>();
@@ -82,7 +81,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        {document ? (
+        {/* document ? (
           <PdfDocument
             file={'data:application/pdf;base64,' + document.data}
             loading={renderLoading}
@@ -91,7 +90,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
           </PdfDocument>
         ) : (
             <React.Fragment />
-          )}
+          ) */}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
@@ -118,15 +117,27 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                   ) : (
                     <React.Fragment />
                   )}
+                                  {['application/pdf'].includes(
+                  document.mimeType
+                ) ? (
+                    <div
+                      className="pdf"
+                      
+                    ><span>PDF</span></div>
+                  ) : (
+                    <React.Fragment />
+                  )}
               </div>
               <div className="right">
                 <h5>
                   {props.bagsData[address].name}
                 </h5>
                 <h5>
+                  Date (UTC) {props.bagsData[address].date}
+                </h5>
+                <h5>
                   {
-                    props.bagsData[address]
-                      .mimeType
+                    props.bagsData[address].mimeType
                   }
                 </h5>
               </div>

@@ -12,6 +12,7 @@ ion-button.AddButton {
   --box-shadow: none;
   color: var(--ion-color-secondary);
   margin: auto;
+  margin-right: 5px;
 }
 
 .connectedAs {

@@ -1,7 +1,7 @@
 import { takeEvery, put } from 'redux-saga/effects';
 import * as rchainToolkit from 'rchain-toolkit';
 
-import { store, State, Bag } from '../../store/';
+import { store, State, Bag } from '..';
 import { addressFromBagId } from '../../utils/addressFromBagId';
 import { inflate } from 'pako';
 
@@ -97,6 +97,6 @@ const load = function* (action: { type: string; payload: any}) {
   return true;
 };
 
-export const loadSaga = function* () {
+export const initSaga = function* () {
   yield takeEvery("INIT", load);
 };

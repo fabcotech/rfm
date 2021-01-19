@@ -4,7 +4,6 @@ import { inflate } from 'pako';
 
 import { addressFromBagId } from '../../utils/addressFromBagId';
 import { store, State } from '../../store/'
-import { bagIdFromAddress } from 'src/utils/bagIdFromAddress';
 
 const {
   readBagOrTokenDataTerm,

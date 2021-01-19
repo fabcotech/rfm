@@ -107,6 +107,7 @@ class ModalUploadDocumentComponent extends React.Component<
       mimeType: fileBlob.type,
       data: Buffer.from(asbase.split(',')[1]).toString('base64'),
       signatures: {},
+      date: new Date().toUTCString(),
     };
     const signature: Signature = {
       publicKey: that.props.publicKey,
@@ -162,6 +163,7 @@ class ModalUploadDocumentComponent extends React.Component<
           mimeType: file.type,
           data: Buffer.from(r.result.split(',')[1]).toString('base64'),
           signatures: {},
+          date: new Date().toUTCString(),
         };
         const signature: Signature = {
           publicKey: that.props.publicKey,
@@ -247,7 +249,7 @@ class ModalUploadDocumentComponent extends React.Component<
             <IonItem>
               <IonButton
                 disabled={!this.state.document || !this.state.bagId}
-                size="small"
+                size="default"
                 onClick={() => {
                   this.props.upload(this.state.bagId, this.state
                     .document as Document);
@@ -257,7 +259,7 @@ class ModalUploadDocumentComponent extends React.Component<
               </IonButton>
               <IonButton
                 color="light"
-                size="small"
+                size="default"
                 onClick={() => {
                   this.setState({ document: undefined });
                 }}

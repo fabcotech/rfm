@@ -1,6 +1,28 @@
+ion-item-sliding {
+  overflow: visible;
+}
 ion-item {
   --padding-start: 0;
   --inner-padding-end: 0;
+  overflow: visible;
+}
+ion-item.with-parent:before {
+  content: '';
+  width: 2px;
+  height: 40px;
+  position: absolute;
+  top: 46px;
+  left: 30px;
+  z-index: 2;
+}
+ion-item.with-parent.success:before{
+  background-color: #2dd36f;
+}
+ion-item.with-parent.secondary:before{
+  background-color: #3dc2ff;
+}
+ion-icon {
+  z-index: 3;
 }
 
 ion-label {

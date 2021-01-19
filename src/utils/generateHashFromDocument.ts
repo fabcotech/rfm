@@ -5,6 +5,7 @@ const { blake2b } = require('blakejs');
 export default (document: Document): Uint8Array => {
   const signaturesOrdered: [string, string][] = [];
   let ordered: (string | [string, string][])[] = [
+    document.date,
     document.name,
     document.mimeType,
     document.data,

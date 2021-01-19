@@ -42,6 +42,8 @@ export interface Document {
   mimeType: string;
   data: string;
   signatures: { [s: string]: Signature };
+  date: string;
+  parent?: string;
 }
 
 const initialState: State = {
@@ -183,6 +185,7 @@ export const getDocumentsCompleted = createSelector(
     Object.keys(bagsData).forEach(bagId => {
       const document = bagsData[bagId];
       if (
+        document &&
         document.signatures['0'] &&
         document.signatures['1'] &&
         document.signatures['2']
@@ -193,6 +196,21 @@ export const getDocumentsCompleted = createSelector(
     });
 
     return documentsComplete;
+  }
+);
+
+export const getDocumentsAddressesInOrder = createSelector(
+  getBagsData,
+  (bagsData: State['bagsData']) => {
+    const addresses = Object.keys(bagsData).sort((a, b) => {
+      if (bagsData[a].date === bagsData[b].date) {
+        return bagsData[a].parent === b ? -1 : 1
+      } else {
+        return bagsData[a].date > bagsData[b].date ? 1 : -1
+      }
+    })
+
+    return addresses;
   }
 );
 

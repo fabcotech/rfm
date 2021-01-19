@@ -8,12 +8,15 @@ import {
   IonRefresherContent,
   IonSearchbar,
   IonButton,
+  IonIcon,
 } from '@ionic/react';
 import { RefresherEventDetail } from '@ionic/core';
+import { refreshOutline } from 'ionicons/icons';
 
 import { useHistory } from 'react-router';
 import './Horizontal.scoped.css';
 import { getConnected, State } from '../store';
+import { loadBagDataSaga } from 'src/store/sagas/loadBagData';
 
 interface HorizontalProps {
   connected: string;
@@ -70,6 +73,25 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
         >
           <span>upload</span>
         </IonButton> }
+        {' '}
+        <IonButton
+          className="AddButton with-border"
+          icon-only
+          slot="start"
+          color="none"
+          size="default"
+          onClick={() => {
+            console.log(props.registryUri);
+            props.init({
+              registryUri: props.registryUri,
+              privateKey: props.privateKey,
+            })
+          }}
+        >
+          <IonIcon icon={refreshOutline}></IonIcon>
+          {' '}
+          <span>refresh</span>
+        </IonButton>
         <IonSearchbar
           color="none"
           value={props.searchText}

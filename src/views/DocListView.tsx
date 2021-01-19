@@ -11,14 +11,16 @@ import {
   IonFabButton,
   IonIcon,
 } from '@ionic/react';
-import { getBags, getConnected, getDocumentsAwaitingSignature, getDocumentsCompleted, State } from '../store';
+import { qrCode } from 'ionicons/icons';
+
+import { getBags, getBagsData, getConnected, getDocumentsAddressesInOrder, getDocumentsAwaitingSignature, getDocumentsCompleted, State } from '../store';
 import Horizontal from '../components/Horizontal';
 import BagItem from '../components/BagItem';
 import DummyBagItem from '../components/dummy/DummyBagItem';
 import ModalDocument from '../components/ModalDocument';
 import ModalUploadDocument from '../components/ModalUploadDocument';
+import { bagIdFromAddress } from '../utils/bagIdFromAddress';
 
-import { qrCode } from 'ionicons/icons';
 
 declare global {
   interface Window {
@@ -46,7 +48,9 @@ interface DockListViewProps {
   bagId?: string;
   isLoading: boolean;
   bags: State['bags'];
+  bagsData: State['bagsData'];
   documentsAwaitingSignature: State['bagsData'];
+  documentsAddressesInOrder: string[];
   documentsCompleted: State['bagsData'];
   searchText: string;
   platform: string;
@@ -122,22 +126,20 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
       {props.action === 'list' ? (
         <>
           {!props.isLoading
-            ? Object.keys(props.bags)
-              .filter(bagId => {
-                return bagId !== '0';
-              })
-              .map(bagId => {
+            ? props.documentsAddressesInOrder.map(address => {
                 return (
                   <BagItem
-                    key={bagId}
+                    key={address}
                     registryUri={props.registryUri}
-                    id={bagId}
-                    bag={props.bags[bagId]}
+                    id={address}
+                    bag={props.bags[address]}
+                    document={props.bagsData[address]}
+                    onlyCompleted={false}
                     awaitsSignature={
-                      !!props.documentsAwaitingSignature[bagId]
+                      !!props.documentsAwaitingSignature[address]
                     }
                     completed={
-                      !!props.documentsCompleted[bagId]
+                      !!props.documentsCompleted[address]
                     }
                   />
                 );
@@ -157,8 +159,10 @@ export const DockListView = connect((state: State) => {
   return {
     connected: getConnected(state),
     bags: getBags(state),
+    bagsData: getBagsData(state),
     documentsCompleted: getDocumentsCompleted(state),
     documentsAwaitingSignature: getDocumentsAwaitingSignature(state),
+    documentsAddressesInOrder: getDocumentsAddressesInOrder(state),
     isLoading: state.isLoading,
     searchText: state.searchText,
     platform: state.platform,

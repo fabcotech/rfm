@@ -15,7 +15,10 @@ export default (document: Document, s: string): boolean => {
     mimeType: document.mimeType,
     name: document.name,
     signatures: {},
+    date: document.date,
+    parent: document.parent,
   };
+
   if (s === '0') {
     signature = document.signatures['0'].signature;
     publicKey = document.signatures['0'].publicKey;

@@ -25,6 +25,7 @@ const uploadBagData = function*(action: {
       name: document.name,
       data: document.data,
       signatures: document.signatures,
+      date: document.date,
     } as Document,
     replacer
   );
