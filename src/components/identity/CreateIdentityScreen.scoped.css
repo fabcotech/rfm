@@ -1,0 +1,10 @@
+.Red {
+  background: var(--ion-color-primary);
+  background: var(--ion-color-primary);
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.Word {
+  background: white;
+}

@@ -13,30 +13,24 @@ import {
   IonButtons,
   IonButton,
 } from '@ionic/react';
-import { document as documentIcon, cloudUpload } from 'ionicons/icons';
+import { document as documentIcon } from 'ionicons/icons';
 import { Plugins } from '@capacitor/core';
 import { useHistory, RouteComponentProps } from 'react-router';
 
-import generateSignature from '../utils/generateSignature';
-import generateSignatureFromHash from '../utils/generateSignatureFromHash';
 import {
   Bag,
-  State,
   Document,
   getBags,
   getBagsData,
   getPublicKey,
-  getPrivateKey,
-  Signature,
+  HistoryState,
+  getPlatform
 } from '../store';
 
 import './ModalUploadDocument.scoped.css';
-import replacer from '../utils/replacer';
-import checkSignature from 'src/utils/checkSignature';
 
 const { FileSelector } = Plugins;
 
-const { blake2b } = require('blakejs');
 
 //Instead of deprecated withRouter
 export const withHistory = (Component: any) => {
@@ -48,13 +42,15 @@ export const withHistory = (Component: any) => {
 };
 
 interface ModalUploadDocumentProps extends RouteComponentProps {
-  privateKey: string;
+  state: HistoryState;
   publicKey: string;
   bags: { [bagId: string]: Bag };
-  upload: (bagId: string, document: Document) => void;
+  upload: (bagId: string, document: Document, did: string) => void;
   platform: string;
+  //recipient: string;
 }
 interface ModalUploadDocumentState {
+  recipient: string;
   bagId: string;
   dropErrors: string[];
   document: undefined | Document;
@@ -66,12 +62,15 @@ class ModalUploadDocumentComponent extends React.Component<
   > {
   constructor(props: ModalUploadDocumentProps) {
     super(props);
+
     this.state = {
       document: undefined,
+      recipient: '',
       bagId: '',
       dropErrors: [],
-      platform: '',
+      platform: props.platform,
     };
+
   }
   dropEl: HTMLTextAreaElement | undefined = undefined;
 
@@ -109,11 +108,6 @@ class ModalUploadDocumentComponent extends React.Component<
       signatures: {},
       date: new Date().toUTCString(),
     };
-    const signature: Signature = {
-      publicKey: that.props.publicKey,
-      signature: generateSignature(document, that.props.privateKey),
-    };
-    document.signatures['0'] = signature;
 
     that.setState({
       document: document,
@@ -153,7 +147,7 @@ class ModalUploadDocumentComponent extends React.Component<
     const file = files[0];
     var r = new FileReader();
     try {
-      r.onloadend = function (e) {
+      r.onloadend = async function (e) {
         if (!e || !e.target || typeof r.result !== 'string') {
           return;
         }
@@ -165,12 +159,6 @@ class ModalUploadDocumentComponent extends React.Component<
           signatures: {},
           date: new Date().toUTCString(),
         };
-        const signature: Signature = {
-          publicKey: that.props.publicKey,
-          signature: generateSignature(document, that.props.privateKey),
-        };
-        document.signatures['0'] = signature;
-        console.log('verified', checkSignature(document, '0'));
 
         that.setState({
           document: document,
@@ -232,6 +220,19 @@ class ModalUploadDocumentComponent extends React.Component<
             ) : (
               undefined
             )}
+
+          <IonItem>
+            <IonLabel position="floating">Request signature from</IonLabel>
+            <IonInput
+              placeholder="did:rchain:<registryUri>"
+              type="text"
+              value={this.state.recipient}
+              onIonChange={e =>
+                this.setState({ recipient: (e.target as HTMLInputElement).value })
+              }
+            />
+          </IonItem>
+
           {this.state.document ? (
             <div className="document">
               <div className="left">
@@ -252,7 +253,7 @@ class ModalUploadDocumentComponent extends React.Component<
                 size="default"
                 onClick={() => {
                   this.props.upload(this.state.bagId, this.state
-                    .document as Document);
+                    .document as Document, this.state.recipient as string);
                 }}
               >
                 Upload
@@ -277,23 +278,24 @@ class ModalUploadDocumentComponent extends React.Component<
 }
 
 const ModalUploadDocument = connect(
-  (state: State) => {
+  (state: HistoryState) => {
     return {
-      privateKey: getPrivateKey(state) as string,
+      state: state,
       bags: getBags(state),
       bagsData: getBagsData(state),
       publicKey: getPublicKey(state) as string,
-      platform: state.platform,
+      platform: getPlatform(state),
     };
   },
   (dispatch: Dispatch) => {
     return {
-      upload: (bagId: string, document: Document) => {
+      upload: (bagId: string, document: Document, did: string) => {
         dispatch({
           type: 'UPLOAD',
           payload: {
             bagId: bagId,
             document: document,
+            recipient: did,
           },
         });
       },

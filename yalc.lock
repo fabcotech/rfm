@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "dids": {
+      "signature": "6fbbe4493ece51bc248c1aa65dec6a1d",
+      "file": true
+    }
+  }
+}

@@ -18,14 +18,16 @@ import {
   IonLoading,
 } from '@ionic/react';
 import './LoginView.scoped.css';
+import { HistoryState, getPlatform } from '../store';
 
 import NoIdentityScreen from '../components/identity/NoIdentityScreen';
 //import CreateIdentityScreen from "../components/identity/CreateIdentityScreen";
 import { ReactComponent as RChainLogo } from '../assets/rchain.svg';
 
 interface LoginViewProps {
+  platform: string;
   action: string;
-  init: (a: { registryUri: string; privateKey: string }) => void;
+  init: (a: { registryUri: string; privateKey: string, platform: string }) => void;
 }
 const LoginViewComponent: React.FC<LoginViewProps> = props => {
   const history = useHistory();
@@ -89,12 +91,12 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
                 <div className="LoadButtonDiv">
                   <IonButton
                     disabled={!privateKey || !registryUri}
-                    onClick={() => {
+                    onClick={async () => {
                       props.init({
-                        registryUri,
-                        privateKey,
+                        registryUri: registryUri,
+                        privateKey: privateKey,
+                        platform: props.platform
                       });
-                      history.push('/doc');
                     }}
                   >
                     Load
@@ -103,10 +105,10 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
               </div>
             </React.Fragment>
           ) : (
-            <React.Fragment>
-              <NoIdentityScreen />
-            </React.Fragment>
-          )}
+              <React.Fragment>
+                <NoIdentityScreen />
+              </React.Fragment>
+            )}
           <div className="BottomBar">
             <IonItem>
               <IonLabel>Dev Login: </IonLabel>
@@ -125,8 +127,8 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
             </IonSlide>
           </Suspense>
         ) : (
-          undefined
-        )}
+            undefined
+          )}
         {props.action === 'restore' ? (
           <Suspense fallback={<IonLoading isOpen={true} />}>
             <IonSlide>
@@ -134,21 +136,26 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
             </IonSlide>
           </Suspense>
         ) : (
-          undefined
-        )}
+            undefined
+          )}
       </IonSlides>
     </IonContent>
   );
 };
-
 export const LoginView = connect(
-  undefined,
+  (state: HistoryState) => {
+    return {
+      platform: getPlatform(state),
+    };
+  },
   (dispatch: Dispatch) => {
     return {
-      init: (a: { registryUri: string; privateKey: string }) => {
+      init: (a: { registryUri: string; privateKey: string, platform: string }) => {
         dispatch({
           type: 'INIT',
           payload: {
+            platform: a.platform,
+            authorised: true,
             privateKey: a.privateKey,
             publicKey: rchainToolkit.utils.publicKeyFromPrivateKey(
               a.privateKey as string

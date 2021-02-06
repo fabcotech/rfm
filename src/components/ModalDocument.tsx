@@ -8,7 +8,9 @@ import {
   IonButtons,
   IonButton,
   IonProgressBar,
+  IonIcon
 } from '@ionic/react';
+import { closeCircle } from 'ionicons/icons';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { useHistory } from 'react-router';
@@ -16,18 +18,29 @@ import { Page, pdfjs, Document as PdfDocument } from 'react-pdf';
 
 import QRCodeComponent from './QRCodeComponent';
 import checkSignature from '../utils/checkSignature';
-import { State, Document } from '../store';
+import { State, Document, HistoryState } from '../store';
 
 import './ModalDocument.scoped.css';
 import { addressFromBagId } from 'src/utils/addressFromBagId';
 
+export interface KeyPair {
+  privateKey: any;
+  publicKey: any;
+  publicAddress: string;
+}
+
 interface ModalDocumentProps {
+  state: HistoryState;
   registryUri: string;
   bagId: string;
   bags: State['bags'];
   bagsData: State['bagsData'];
-  loadBag: (registryUri: string, bagId: string) => void;
+  loadBag: (registryUri: string, bagId: string, state: HistoryState) => void;
   reupload: (resitryUri: string, bagId: string) => void;
+}
+
+interface DocumentInfo {
+  numPages: number;
 }
 
 const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
@@ -36,11 +49,18 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   const history = useHistory();
   const pdfcontent64 = '';
   const [page, setPage] = useState<number>();
+
+  const [numPages, setNumPages] = useState<number>();
+  function onDocumentLoadSuccess(docInfo: DocumentInfo) {
+    setNumPages(docInfo.numPages);
+  }
+
+
   pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version
     }/pdf.worker.js`;
 
   useEffect(() => {
-    props.loadBag(props.registryUri, props.bagId);
+    props.loadBag(props.registryUri, props.bagId, props.state);
   });
 
   const renderLoading = () => {
@@ -66,6 +86,7 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
 
   return (
     <>
+      { /*
       <IonHeader>
         <IonToolbar>
           <IonTitle>{props.bagId}</IonTitle>
@@ -80,17 +101,31 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
           </IonButtons>
         </IonToolbar>
       </IonHeader>
+      */ }
       <IonContent>
-        {/* document ? (
+        {document && 'application/pdf' === document.mimeType ? (
           <PdfDocument
             file={'data:application/pdf;base64,' + document.data}
             loading={renderLoading}
+            onLoadSuccess={onDocumentLoadSuccess}
           >
-            <Page pageNumber={page} pageIndex={0} />
+            {
+              Array.from(
+                new Array(numPages),
+                (el, index) => (
+                  <Page
+                    className="PdfPage"
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    pageIndex={index}
+                  />
+                ),
+              )
+            }
           </PdfDocument>
         ) : (
             <React.Fragment />
-          ) */}
+          )}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
@@ -100,10 +135,10 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
           <span className="no-document">No document attached</span>
         ) : (
             <div className="qrCodeContainer">
-              <QRCodeComponent url={`http://localhost:3000/doc/show/${props.registryUri}/${props.bagId}`} />
+              <QRCodeComponent url={`did:rchain:${props.registryUri}/${props.bagId}`} />
             </div>
           )}
-        {document ? (
+        { /* document ? (
           <div className="ps5">
             <div className="document">
               <div className="left">
@@ -117,12 +152,12 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                   ) : (
                     <React.Fragment />
                   )}
-                                  {['application/pdf'].includes(
+                {['application/pdf'].includes(
                   document.mimeType
                 ) ? (
                     <div
                       className="pdf"
-                      
+
                     ><span>PDF</span></div>
                   ) : (
                     <React.Fragment />
@@ -142,6 +177,24 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                 </h5>
               </div>
             </div>
+             */ }
+
+        {
+          <IonButtons className="ButtonArray">
+            <IonButton
+              color="primary"
+              onClick={() => {
+                history.replace('/doc', { direction: 'back' });
+              }}
+            >
+              <IonIcon icon={closeCircle} size="large" />
+            </IonButton>
+          </IonButtons>
+        }
+
+        {
+          document &&
+          <div className="FloatingBottomLeft">
             {Object.keys(document.signatures).map(s => {
               return (
                 <p className="signature-line" key={s}>
@@ -149,56 +202,56 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                     ? <>
                       <span className="signature-ok">✓</span>
                       {`signature n°${s} verified (${document.signatures[s].publicKey.slice(
-                      0,
-                      12
-                    )}…)`}
+                        0,
+                        12
+                      )}…)`}
                     </>
                     : <>
                       <span>✗</span>
                       {`signature n°${s} invalid (${document.signatures[s].publicKey.slice(
-                      0,
-                      12
-                    )}…)`}
+                        0,
+                        12
+                      )}…)`}
                     </>
                   }
                 </p>
               );
             })}
-            {
-              [undefined, "0", "1"].includes(lastSignature) &&
+            {[undefined, "0", "1"].includes(lastSignature) &&
               <IonButton
+                className="SignatureRequiredBtn"
                 size="default"
                 onClick={() => {
                   props.reupload(props.registryUri, props.bagId);
                 }}
               >
-                Re-upload and sign
+                Your signature required
               </IonButton>
             }
           </div>
-        ) : (
-            undefined
-          )}
+        }
       </IonContent>
     </>
   );
 };
 
 const ModalDocument = connect(
-  (state: State) => {
+  (state: HistoryState) => {
     return {
-      bags: state.bags,
-      bagsData: state.bagsData,
+      bags: state.reducer.bags,
+      bagsData: state.reducer.bagsData,
+      state: state
     };
   },
   (dispatch: Dispatch) => {
     return {
-      loadBag: (registryUri: string, bagId: string) => {
+      loadBag: (registryUri: string, bagId: string, state: HistoryState) => {
         dispatch({
           type: 'LOAD_BAG_DATA',
           payload: {
             registryUri: registryUri,
             bagId: bagId,
+            state: state
           },
         });
       },

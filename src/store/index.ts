@@ -1,11 +1,31 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 import { createSelector } from 'reselect';
 
 import { sagas } from './sagas/';
+import { connectRouter } from 'connected-react-router';
+import { routerMiddleware } from 'connected-react-router/immutable';
+import { createBrowserHistory, History } from 'history'
+
+import { CombinedState } from 'redux';
+import { RouterState } from 'connected-react-router';
+
+import 'capacitor-secure-storage-plugin';
+import { Plugins } from '@capacitor/core';
+
+import {
+  FingerprintAIO,
+  FingerprintOptions
+} from "@ionic-native/fingerprint-aio/";
+import { rejects } from 'assert';
+
+import { DID, JWSSignature } from 'dids';
+
+const { SecureStoragePlugin } = Plugins;
 
 export interface State {
+  did: undefined | DID;
   readOnlyUrl: string;
   validatorUrl: string;
 
@@ -16,7 +36,6 @@ export interface State {
   registryUri: undefined | string;
 
   publicKey: undefined | string;
-  privateKey: undefined | string;
 
   // rchain-token bags and data
   bags: { [address: string]: Bag };
@@ -25,7 +44,14 @@ export interface State {
   isLoading: boolean;
   searchText: string;
   platform: string;
+
+  authorised: boolean;
 }
+
+export type HistoryState = CombinedState<{
+  router: RouterState<unknown>;
+  reducer: State; 
+}>
 
 export interface Bag {
   n: string;
@@ -33,9 +59,9 @@ export interface Bag {
   price: undefined | number;
   publicKey: string;
 }
-export interface Signature {
+export interface Signature extends JWSSignature {
+  payload: string;
   publicKey: string;
-  signature: string;
 }
 export interface Document {
   name: string;
@@ -43,23 +69,25 @@ export interface Document {
   data: string;
   signatures: { [s: string]: Signature };
   date: string;
-  parent?: string;
+  scheme?: { [s: string]: string }
+  //parent?: string;
 }
 
 const initialState: State = {
+  did: undefined,
   readOnlyUrl: 'http://127.0.0.1:40403',
   validatorUrl: 'http://127.0.0.1:40403',
   nonce: undefined,
   contractPublicKey: undefined,
   identities: {},
   registryUri: undefined,
-  privateKey: undefined,
   publicKey: undefined,
   bags: {},
   bagsData: {},
   isLoading: false,
   searchText: '',
   platform: '',
+  authorised: false
 };
 
 const reducer = (
@@ -71,9 +99,15 @@ const reducer = (
     case 'INIT': {
       return {
         ...state,
+      };
+    }
+    case 'AUTHORISED': {
+      return {
+        ...state,
+        did: action.payload.did,
+        authorised: true,
         registryUri: action.payload.registryUri,
         publicKey: action.payload.publicKey,
-        privateKey: action.payload.privateKey,
       };
     }
     case "ADD_IDENTITY": {
@@ -140,7 +174,9 @@ const reducer = (
 };
 
 const sagaMiddleware = createSagaMiddleware();
-let middlewares = [sagaMiddleware];
+export const history = createBrowserHistory()
+
+let middlewares = [routerMiddleware(history), sagaMiddleware];
 
 const sagasFunction = function* rootSaga() {
   try {
@@ -151,36 +187,74 @@ const sagasFunction = function* rootSaga() {
   }
 };
 
-export const store = createStore(reducer, applyMiddleware(...middlewares));
+const createRootReducer = (history: History) => combineReducers({
+  router: connectRouter(history),
+  reducer
+})
+
+export const store = createStore(createRootReducer(history), applyMiddleware(...middlewares));
 
 sagaMiddleware.run(sagasFunction);
 
-export const getPrivateKey = createSelector(
-  (state: State) => state,
-  (state: State) => state.privateKey
-);
+export interface AccountStorage {
+  registryUri: string,
+  privateKey: string
+}
 export const getPublicKey = createSelector(
-  (state: State) => state,
-  (state: State) => state.publicKey
+  (state: HistoryState) => state,
+  (state: HistoryState) => state.reducer.publicKey
+);
+export const getPlatform = createSelector(
+  (state: HistoryState) => state,
+  (state: HistoryState) => state.reducer.platform
+);
+export const getPrivateKey = createSelector(
+  getPublicKey,
+  getPlatform,
+  (publicKey: HistoryState['reducer']['publicKey'], platform: HistoryState['reducer']['platform']) => {
+    return new Promise<string>(async (resolve, reject) => {
+      if (["ios", "android"].includes(platform)) {
+        FingerprintAIO.isAvailable()
+        .then(available => {
+          FingerprintAIO.loadBiometricSecret({
+            description: "Allow the app to access your PrivateKey?",
+            disableBackup: true, // always disabled on Android
+          }).then(privateKey => {
+            resolve(privateKey)
+          })
+        })
+        .catch(err => {
+          console.info(
+            "Biometrics not available. Reason: " + JSON.stringify(err)
+          );
+          reject(err)
+        });
+      }
+      else {
+        const info = await SecureStoragePlugin.get({ key: publicKey })
+        const parsedInfo = JSON.parse(info.value) as AccountStorage;
+        resolve(parsedInfo.privateKey);
+      }
+    });
+  }
 );
 export const getBags = createSelector(
-  (state: State) => state,
-  (state: State) => state.bags
+  (state: HistoryState) => state,
+  (state: HistoryState) => state.reducer.bags
 );
 export const getBagsData = createSelector(
-  (state: State) => state,
-  (state: State) => state.bagsData
+  (state: HistoryState) => state,
+  (state: HistoryState) => state.reducer.bagsData
 );
-
 export const getConnected = createSelector(
-  (state: State) => state,
-  (state: State): 'owner' | 'guest' => state.contractPublicKey === state.publicKey ? "owner" : "guest"
+  (state: HistoryState) => state,
+  (state: HistoryState): 'owner' | 'guest' => state.reducer.contractPublicKey === state.reducer.publicKey ? "owner" : "guest"
 );
 
 export const getDocumentsCompleted = createSelector(
-  getBagsData,
-  getPublicKey,
-  (bagsData: State['bagsData'], publicKey: State['publicKey']) => {
+  (state: HistoryState) => state,
+  (state: HistoryState) => {
+    const bagsData = state.reducer.bagsData;
     const documentsComplete: { [bagId: string]: Document } = {};
     Object.keys(bagsData).forEach(bagId => {
       const document = bagsData[bagId];
@@ -201,10 +275,10 @@ export const getDocumentsCompleted = createSelector(
 
 export const getDocumentsAddressesInOrder = createSelector(
   getBagsData,
-  (bagsData: State['bagsData']) => {
+  (bagsData: HistoryState['reducer']['bagsData']) => {
     const addresses = Object.keys(bagsData).sort((a, b) => {
       if (bagsData[a].date === bagsData[b].date) {
-        return bagsData[a].parent === b ? -1 : 1
+        return -1;
       } else {
         return bagsData[a].date > bagsData[b].date ? 1 : -1
       }
@@ -217,7 +291,7 @@ export const getDocumentsAddressesInOrder = createSelector(
 export const getDocumentsAwaitingSignature = createSelector(
   getBagsData,
   getPublicKey,
-  (bagsData: State['bagsData'], publicKey: State['publicKey']) => {
+  (bagsData: HistoryState['reducer']['bagsData'], publicKey: HistoryState['reducer']['publicKey']) => {
     const documentsAwaitingSignature: { [bagId: string]: Document } = {};
     Object.keys(bagsData).forEach(bagId => {
       const document = bagsData[bagId];
