@@ -136,9 +136,6 @@ const load = function* (action: { type: string; payload: any}) {
   const newBagsData: { [address: string]: Document } = {};
 
   Object.keys(bagsData).forEach(async bagId => {
-    if (bagId !== "TokenSale5") {
-      return
-    }
     const dataAtNameBuffer = Buffer.from(decodeURI(bagsData[bagId]), 'base64');
     const unzippedBuffer = Buffer.from(inflate(dataAtNameBuffer));
     const fileAsString = unzippedBuffer.toString("utf-8");
