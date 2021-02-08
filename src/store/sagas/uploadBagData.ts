@@ -15,6 +15,7 @@ import { Secp256k1Provider } from 'key-did-provider-secp256k1';
 import { DID } from 'dids';
 import { encodeBase64 } from 'dids/lib/utils'
 import { parse } from "did-resolver";
+import { resolve } from 'dns';
 
 
 const { purchaseTokensTerm } = require('rchain-token-files');
@@ -38,7 +39,7 @@ const uploadBagData = function*(action: {
   yield did.authenticate({ provider: provider })
 
   if (!repipient) {
-    repipient = did.id;
+    repipient = "did:rchain:" + state.reducer.registryUri;
   }
 
   const fileDocument = {
@@ -48,9 +49,9 @@ const uploadBagData = function*(action: {
     signatures: document.signatures,
     date: document.date,
     scheme: {
-      '0': did.id,
+      '0': "did:rchain:" + state.reducer.registryUri,
       '1': repipient,
-      '2': did.id,
+      '2': "did:rchain:" + state.reducer.registryUri,
     }
   } as Document;
 
@@ -80,6 +81,8 @@ const uploadBagData = function*(action: {
 
   const parsedDid = parse(repipient);
   const addr = parsedDid.id;
+
+  console.info("sending to " + addr);
 
   const term = purchaseTokensTerm(addr, payload);
   

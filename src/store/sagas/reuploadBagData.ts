@@ -78,7 +78,7 @@ const reuploadBagData = function*(action: {
   if (fileDocument.scheme) {
     recipient = fileDocument.scheme[i];
   } else {
-    recipient = did.id;
+    recipient = "did:rchain:" + state.reducer.registryUri;
   }
 
   const parsedDid = parse(recipient);
