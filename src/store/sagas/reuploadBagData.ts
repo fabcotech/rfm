@@ -14,6 +14,7 @@ import KeyResolver from 'key-did-resolver';
 import { getResolver as getRchainResolver } from "rchain-did-resolver";
 import { Secp256k1Provider } from 'key-did-provider-secp256k1';
 import { DID } from 'dids';
+import { parse } from "did-resolver";
 import { encodeBase64 } from 'dids/lib/utils'
 
 
@@ -80,6 +81,9 @@ const reuploadBagData = function*(action: {
     recipient = did.id;
   }
 
+  const parsedDid = parse(recipient);
+  const addr = parsedDid.id;
+
   const { jws, linkedBlock } = yield did.createDagJWS(fileDocument);
   const jwe = yield did.createDagJWE({jws: jws, data: encodeBase64(linkedBlock)}, [recipient], {
     protectedHeader: {
@@ -104,7 +108,7 @@ const reuploadBagData = function*(action: {
 
   did.deauthenticate()
 
-  const term = purchaseTokensTerm(state.reducer.registryUri as string, payload);
+  const term = purchaseTokensTerm(addr as string, payload);
 
   let validAfterBlockNumberResponse;
   try {
