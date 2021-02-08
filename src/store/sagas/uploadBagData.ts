@@ -81,9 +81,6 @@ const uploadBagData = function*(action: {
 
   const parsedDid = parse(repipient);
   const addr = parsedDid.id;
-
-  console.info("sending to " + addr);
-
   const term = purchaseTokensTerm(addr, payload);
   
   let validAfterBlockNumberResponse;

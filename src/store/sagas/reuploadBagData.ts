@@ -68,9 +68,6 @@ const reuploadBagData = function*(action: {
     date: document.date,
     //parent: "did:rchain:" + addressFromBagId(action.payload.registryUri, action.payload.bagId),
   };
-  console.info("Reuploading document:")
-  console.info(signedDocument);
-
 
   const fileDocument = {
     ...signedDocument,
@@ -83,13 +80,8 @@ const reuploadBagData = function*(action: {
     recipient = "did:rchain:" + state.reducer.registryUri;
   }
 
-  console.info("i:")
-  console.info(i);
   const parsedDid = parse(recipient);
   const addr = parsedDid.id;
-  console.info("recipient:")
-  console.info(recipient);
-  console.info(addr);
 
   const { jws, linkedBlock } = yield did.createDagJWS(fileDocument);
   const jwe = yield did.createDagJWE({jws: jws, data: encodeBase64(linkedBlock)}, [recipient], {
