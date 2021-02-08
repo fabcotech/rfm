@@ -3,7 +3,7 @@ import * as rchainToolkit from 'rchain-toolkit';
 import { deflate } from 'pako';
 import { v4 } from 'uuid';
 
-import { Document, store, State } from '../';
+import { Document, store } from '../';
 
 import replacer from '../../utils/replacer';
 
@@ -14,6 +14,7 @@ import { getResolver as getRchainResolver } from "rchain-did-resolver";
 import { Secp256k1Provider } from 'key-did-provider-secp256k1';
 import { DID } from 'dids';
 import { encodeBase64 } from 'dids/lib/utils'
+import { parse } from "did-resolver";
 
 
 const { purchaseTokensTerm } = require('rchain-token-files');
@@ -23,7 +24,7 @@ const uploadBagData = function*(action: {
   payload: { document: Document; bagId: string, recipient: string };
 }) {
   console.log('uploload-bag-data', action.payload);
-  const repipient = action.payload.recipient;
+  let repipient = action.payload.recipient;
   const document = action.payload.document;
   const state : HistoryState = store.getState();
 
@@ -35,6 +36,10 @@ const uploadBagData = function*(action: {
   const provider = new Secp256k1Provider(authSecret)
 
   yield did.authenticate({ provider: provider })
+
+  if (!repipient) {
+    repipient = did.id;
+  }
 
   const fileDocument = {
     mimeType: document.mimeType,
@@ -72,8 +77,11 @@ const uploadBagData = function*(action: {
   };
 
   did.deauthenticate()
-  
-  const term = purchaseTokensTerm(state.reducer.registryUri as string, payload);
+
+  const parsedDid = parse(repipient);
+  const addr = parsedDid.id;
+
+  const term = purchaseTokensTerm(addr, payload);
   
   let validAfterBlockNumberResponse;
   try {

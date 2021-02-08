@@ -278,7 +278,7 @@ export const getDocumentsAddressesInOrder = createSelector(
   (bagsData: HistoryState['reducer']['bagsData']) => {
     const addresses = Object.keys(bagsData).sort((a, b) => {
       if (bagsData[a].date === bagsData[b].date) {
-        return -1;
+        return 1;
       } else {
         return bagsData[a].date > bagsData[b].date ? 1 : -1
       }
