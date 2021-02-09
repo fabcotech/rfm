@@ -8,6 +8,16 @@ import replacer from '../../utils/replacer';
 import generateSignature from '../../utils/generateSignature';
 import { addressFromBagId } from 'src/utils/addressFromBagId';
 
+import { getPrivateKey, HistoryState } from '../index';
+
+import KeyResolver from 'key-did-resolver';
+import { getResolver as getRchainResolver } from "rchain-did-resolver";
+import { Secp256k1Provider } from 'key-did-provider-secp256k1';
+import { DID } from 'dids';
+import { parse } from "did-resolver";
+import { encodeBase64 } from 'dids/lib/utils'
+
+
 const { purchaseTokensTerm } = require('rchain-token-files');
 
 const reuploadBagData = function*(action: {
@@ -15,10 +25,17 @@ const reuploadBagData = function*(action: {
   payload: { bagId: string; registryUri: string };
 }) {
   console.log('reuploload-bag-data', action.payload);
-  const state: State = store.getState();
+  const state : HistoryState = store.getState();
   const bagsData = getBagsData(state);
 
-  const publicKey = state.publicKey;
+  const publicKey = state.reducer.publicKey;
+  const privateKey = yield getPrivateKey(state);
+
+  const did = new DID({ resolver: { ...yield getRchainResolver(), ...KeyResolver.getResolver() } })
+  const authSecret = Buffer.from(privateKey, 'hex');
+  const provider = new Secp256k1Provider(authSecret)
+
+  yield did.authenticate({ provider: provider })
 
   const document =
     bagsData[`${action.payload.registryUri}/${action.payload.bagId}`];
@@ -27,49 +44,57 @@ const reuploadBagData = function*(action: {
     return;
   }
 
-  const signedDocument = {
-    ...document,
-    data: Buffer.from(document.data, 'utf-8').toString('base64'),
-    date: document.date,
-    parent: addressFromBagId(action.payload.registryUri, action.payload.bagId),
-  };
-  const signature: Signature = {
-    publicKey: publicKey as string,
-    signature: generateSignature(signedDocument, state.privateKey as string),
-  };
   let i = '0';
   let newBagId = action.payload.bagId;
   if (!document.signatures['0']) {
-    document.signatures['0'] = signature;
   } else if (!document.signatures['1']) {
     i = '1';
     newBagId = `${action.payload.bagId} ${parseInt(i, 10) + 1}`;
-    document.signatures['1'] = signature;
   } else if (!document.signatures['2']) {
     i = '2';
     newBagId = `${action.payload.bagId.slice(
       0,
       action.payload.bagId.length - 1
     )} ${parseInt(i, 10) + 1}`;
-    document.signatures['2'] = signature;
   } else {
     console.error('Signature 0, 1 and 2 are already on document');
     return;
   }
-  console.log('newBagId', newBagId);
+  console.log('newBagId', newBagId); 
 
-  const asJson = JSON.stringify(
-    {
-      mimeType: signedDocument.mimeType,
-      name: signedDocument.name,
-      data: signedDocument.data,
-      signatures: signedDocument.signatures,
-      date: signedDocument.date,
-      parent: signedDocument.parent,
-    } as Document,
-    replacer
-  );
-  const gzipped = Buffer.from(deflate(asJson)).toString('base64');
+  const signedDocument = {
+    ...document,
+    data: Buffer.from(document.data, 'utf-8').toString('base64'),
+    date: document.date,
+    //parent: "did:rchain:" + addressFromBagId(action.payload.registryUri, action.payload.bagId),
+  };
+
+  const fileDocument = {
+    ...signedDocument,
+  } as Document
+
+  let recipient;
+  if (fileDocument.scheme) {
+    recipient = fileDocument.scheme[(parseInt(i)+1) % 3];
+  } else {
+    recipient = "did:rchain:" + state.reducer.registryUri;
+  }
+
+  const parsedDid = parse(recipient);
+  const addr = parsedDid.id;
+
+  const { jws, linkedBlock } = yield did.createDagJWS(fileDocument);
+  const jwe = yield did.createDagJWE({jws: jws, data: encodeBase64(linkedBlock)}, [recipient], {
+    protectedHeader: {
+      alg: "A256GCMKW"
+    }
+  })
+
+  const stringifiedJws = JSON.stringify(jwe, replacer);
+  const deflatedJws = deflate(stringifiedJws);
+  const gzipped = Buffer.from(deflatedJws).toString('base64');
+
+
   const payload = {
     publicKey: publicKey,
     newBagId: newBagId,
@@ -80,12 +105,14 @@ const reuploadBagData = function*(action: {
     data: gzipped,
   };
 
-  const term = purchaseTokensTerm(state.registryUri as string, payload);
+  did.deauthenticate()
+
+  const term = purchaseTokensTerm(addr as string, payload);
 
   let validAfterBlockNumberResponse;
   try {
     validAfterBlockNumberResponse = JSON.parse(
-      yield rchainToolkit.http.blocks(state.readOnlyUrl, {
+      yield rchainToolkit.http.blocks(state.reducer.readOnlyUrl, {
         position: 1,
       })
     )[0].blockNumber;
@@ -99,13 +126,13 @@ const reuploadBagData = function*(action: {
     'secp256k1',
     timestamp,
     term,
-    state.privateKey as string,
+    privateKey,
     publicKey as string,
     1,
     4000000000,
     validAfterBlockNumberResponse
   );
-  yield rchainToolkit.http.deploy(state.validatorUrl, deployOptions);
+  yield rchainToolkit.http.deploy(state.reducer.validatorUrl, deployOptions);
 
   yield put({
     type: 'PURCHASE_BAG_COMPLETED',

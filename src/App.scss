@@ -57,7 +57,7 @@ body {
 }
 
 .RedFill {
-  background: var(--ion-color-primary);
+  background: var(--ion-color-light);
   width: 100%;
   transition: all 0.4s ease-out;
 
@@ -70,7 +70,7 @@ body {
 }
 
 .IdentityBG {
-  --background: var(--ion-color-primary);
+  --background: var(--ion-color-light);
 }
 
 .ProfileButton {
@@ -115,7 +115,7 @@ ion-slides.IdentityList {
   bottom: 50%;
   border-top: 0.7em solid transparent;
   border-bottom: 0.7em solid transparent;
-  border-left: 1em solid var(--ion-color-primary);
+  border-left: 1em solid var(--ion-color-light);
 }
 
 .ArrowLeft {
@@ -125,7 +125,7 @@ ion-slides.IdentityList {
   bottom: 50%;
   border-top: 0.7em solid transparent;
   border-bottom: 0.7em solid transparent;
-  border-right: 1em solid var(--ion-color-primary);
+  border-right: 1em solid var(--ion-color-light);
 }
 
 .ps5 {
@@ -153,9 +153,18 @@ ion-slides.IdentityList {
 
 ion-button {
   border-radius: 2px;
+  text-transform: none;
 }
 
 ion-button.with-border {
   border-radius: 2px;
   border-width: 2px;
+}
+
+.react-pdf__Page__textContent {
+  border-bottom: 0.1em solid black;
+}
+
+.UserInfo {
+  display: contents;
 }

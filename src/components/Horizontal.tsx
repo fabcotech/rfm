@@ -15,15 +15,15 @@ import { refreshOutline } from 'ionicons/icons';
 
 import { useHistory } from 'react-router';
 import './Horizontal.scoped.css';
-import { getConnected, State } from '../store';
+import { getConnected, State, getPrivateKey, HistoryState } from '../store';
 import { loadBagDataSaga } from 'src/store/sagas/loadBagData';
 
 interface HorizontalProps {
+  state: HistoryState,
   connected: string;
-  privateKey: string;
   registryUri: string;
   searchText: string;
-  init: (a: { privateKey: string; registryUri: string }) => void;
+  init: (a: { state: HistoryState; registryUri: string }) => void;
   setSearchText: (searchText: string) => void;
 }
 
@@ -32,7 +32,7 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
 
   const doFetch = () => {
     props.init({
-      privateKey: props.privateKey,
+      state: props.state,
       registryUri: props.registryUri,
     });
   };
@@ -51,79 +51,72 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
         <IonRefresherContent />
       </IonRefresher>
+      { /*
       <div>
         <IonItem class="connectedAs">Connected as {props.connected}</IonItem>
       </div>
+      */ }
       <div>
-      <IonItem
-        detail={false}
-        no-padding
-        lines="none"
-        className="SearchBarContainer"
-      >
-        { props.connected === 'owner' && <IonButton
-          className="AddButton with-border"
-          icon-only
-          slot="start"
-          color="none"
-          size="default"
-          onClick={() => {
-            history.push('/doc/upload/');
-          }}
+        <IonItem
+          detail={false}
+          no-padding
+          lines="none"
+          className="SearchBarContainer"
         >
-          <span>upload</span>
-        </IonButton> }
-        {' '}
-        <IonButton
-          className="AddButton with-border"
-          icon-only
-          slot="start"
-          color="none"
-          size="default"
-          onClick={() => {
-            console.log(props.registryUri);
-            props.init({
-              registryUri: props.registryUri,
-              privateKey: props.privateKey,
-            })
-          }}
-        >
-          <IonIcon icon={refreshOutline}></IonIcon>
+          {props.connected === 'owner' && <IonButton
+            className="AddButton with-border"
+            icon-only
+            slot="start"
+            color="none"
+            size="default"
+            onClick={() => {
+              history.push('/doc/upload/');
+            }}
+          >
+            <span>upload</span>
+          </IonButton>}
           {' '}
-          <span>refresh</span>
-        </IonButton>
-        <IonSearchbar
-          color="none"
-          value={props.searchText}
-          onIonChange={e => props.setSearchText(e.detail.value!)}
-        />
-      </IonItem>
+          <IonButton
+            className="AddButton with-border"
+            icon-only
+            slot="start"
+            color="none"
+            size="default"
+            onClick={() => {
+              console.log(props.registryUri);
+              props.init({
+                state: props.state,
+                registryUri: props.registryUri,
+              })
+            }}
+          >
+            <IonIcon icon={refreshOutline}></IonIcon>
+            {' '}
+            <span>refresh</span>
+          </IonButton>
+          <IonSearchbar
+            color="none"
+            value={props.searchText}
+            onIonChange={e => props.setSearchText(e.detail.value!)}
+          />
+        </IonItem>
       </div>
     </React.Fragment>
   );
 };
 
 const Horizontal = connect(
-  (state: State) => {
+  (state: HistoryState) => {
     return {
+      state: state,
       connected: getConnected(state),
-      privateKey: state.privateKey as string,
-      registryUri: state.registryUri as string,
-      searchText: state.searchText as string,
+      registryUri: state.reducer.registryUri as string,
+      searchText: state.reducer.searchText as string,
     };
   },
   (dispatch: Dispatch) => {
     return {
-      init: (a: { privateKey: string; registryUri: string }) => {
-        dispatch({
-          type: 'INIT',
-          payload: {
-            ...a,
-            publicKey: rchainToolkit.utils.publicKeyFromPrivateKey(
-              a.privateKey as string
-            ),
-          },
-        });
+      init: async (a: { state: HistoryState; registryUri: string }) => {
       },
 
       setSearchText: (searchText: string) => {

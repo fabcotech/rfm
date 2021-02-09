@@ -1,0 +1,46 @@
+{
+  "name": "dids",
+  "version": "1.1.1+6fbbe449",
+  "description": "Typescript library for interacting with DIDs",
+  "main": "lib/index.js",
+  "files": [
+    "lib/*"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build",
+    "prebuild": "npm run clean",
+    "lint": "eslint ./src --ext .js,.ts",
+    "docs": "typedoc --mode file --excludePrivate --name DID --includeVersion ; touch docs/.nojekyll",
+    "clean": "rm -rf ./lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ceramicnetwork/js-did.git"
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-uint8array"
+  },
+  "keywords": [
+    "DID",
+    "identity",
+    "did-provider",
+    "self-sovereign"
+  ],
+  "author": "Joel Thorstensson <oed@3box.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ceramicnetwork/js-did/issues"
+  },
+  "homepage": "https://github.com/ceramicnetwork/js-did#readme",
+  "dependencies": {
+    "@stablelib/random": "^1.0.0",
+    "cids": "^1.0.0",
+    "dag-jose-utils": "^0.1.0",
+    "did-jwt": "^4.8.0",
+    "did-resolver": "^2.1.2",
+    "rpc-utils": "^0.1.3",
+    "uint8arrays": "^1.1.0"
+  }
+}

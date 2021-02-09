@@ -22,7 +22,7 @@
 }
 
 .pdf {
-  border: 2px solid #B45;
+  border: 2px solid #b45;
   color: #b45;
   border-radius: 4px;
   padding: 35px 20px;
@@ -36,8 +36,11 @@
 
 .signature-line {
   display: flex;
+  background: var(--ion-color-success);
+  padding: 0.2em;
 }
-.signature-ok, .signature-ko {
+.signature-ok,
+.signature-ko {
   width: 22px;
   height: 22px;
   display: flex;
@@ -49,8 +52,30 @@
   margin-right: 10px;
 }
 .signature-ok {
-  background: #4B5;
+  background: #4b5;
 }
 .signature-ko {
-  background: #B45;
+  background: #b45;
+}
+
+.SignatureRequiredBtn {
+  margin-bottom: 2em;
+  height: 4em;
+  margin-left: 0;
+  --border-radius: 0;
+}
+
+.FloatingBottomLeft {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+}
+
+.ButtonArray {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  margin: 1em;
 }

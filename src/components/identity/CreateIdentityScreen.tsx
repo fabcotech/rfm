@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 
 import {
   IonLabel,
@@ -18,6 +19,7 @@ import { bufferToHex, pubToAddress, toChecksumAddress } from "ethereumjs-util";
 
 const CreateIdentityScreen: React.FC = (props) => {
   const [seed, setSeed] = useState(Array);
+  const history = useHistory();
 
   useEffect(() => {
     const tmp = createSeed();
@@ -44,7 +46,9 @@ const CreateIdentityScreen: React.FC = (props) => {
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonButton color="none" className="ActionButton">Next</IonButton>
+            <IonButton color="none" className="ActionButton" onClick={() => {
+              history.push('/user/new');
+            }}>Next</IonButton>
           </IonCol>
         </IonRow>
       </IonGrid>

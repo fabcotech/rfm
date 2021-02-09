@@ -13,15 +13,16 @@ import {
 } from '@ionic/react';
 import { qrCode } from 'ionicons/icons';
 
-import { getBags, getBagsData, getConnected, getDocumentsAddressesInOrder, getDocumentsAwaitingSignature, getDocumentsCompleted, State } from '../store';
+import { getBags, getBagsData, getConnected, getDocumentsAddressesInOrder, getDocumentsAwaitingSignature, getDocumentsCompleted, State, HistoryState } from '../store';
 import Horizontal from '../components/Horizontal';
 import BagItem from '../components/BagItem';
 import DummyBagItem from '../components/dummy/DummyBagItem';
 import ModalDocument from '../components/ModalDocument';
 import ModalUploadDocument from '../components/ModalUploadDocument';
-import { bagIdFromAddress } from '../utils/bagIdFromAddress';
 
+import { parse } from "did-resolver";
 
+/*
 declare global {
   interface Window {
     cordova: {
@@ -33,6 +34,7 @@ declare global {
     };
   }
 }
+*/
 
 const renderLoading = () => {
   return <IonProgressBar color="secondary" type="indeterminate" />;
@@ -59,13 +61,32 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
   const history = useHistory();
 
   const scanQRCode = () => {
-    window.cordova.plugins.barcodeScanner.scan(
+    (window as any).cordova.plugins.barcodeScanner.scan(
       (result: any) => {
-        const url = new URL(result.text);
-        //TODO: check if link is also a valid hosted web app
-        history.push(
-          url.pathname + url.search
-        );
+
+        try {
+          const parsedDid = parse(result.text);
+          const method = parsedDid.method;
+
+          if (method === "rchain") {
+            let link = "/doc/show/" + parsedDid.id;
+            if (parsedDid.path) {
+              link = link + parsedDid.path;
+            }
+            history.push(
+              link
+            );
+          }
+        }
+        catch (err) {
+          console.info("not a DID. " + err);
+
+          const url = new URL(result.text);
+          //TODO: check if link is also a valid hosted web app
+          history.push(
+            url.pathname + url.search
+          );
+        }
       },
       (err: string) => {
         console.error(err);
@@ -127,23 +148,23 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
         <>
           {!props.isLoading
             ? props.documentsAddressesInOrder.map(address => {
-                return (
-                  <BagItem
-                    key={address}
-                    registryUri={props.registryUri}
-                    id={address}
-                    bag={props.bags[address]}
-                    document={props.bagsData[address]}
-                    onlyCompleted={false}
-                    awaitsSignature={
-                      !!props.documentsAwaitingSignature[address]
-                    }
-                    completed={
-                      !!props.documentsCompleted[address]
-                    }
-                  />
-                );
-              })
+              return (
+                <BagItem
+                  key={address}
+                  registryUri={props.registryUri}
+                  id={address}
+                  bag={props.bags[address]}
+                  document={props.bagsData[address]}
+                  onlyCompleted={false}
+                  awaitsSignature={
+                    !!props.documentsAwaitingSignature[address]
+                  }
+                  completed={
+                    !!props.documentsCompleted[address]
+                  }
+                />
+              );
+            })
             : [...Array(10)].map((x, i) => (
               <DummyBagItem key={i} id={i.toString()} />
             ))}
@@ -155,7 +176,7 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
   );
 };
 
-export const DockListView = connect((state: State) => {
+export const DockListView = connect((state: HistoryState) => {
   return {
     connected: getConnected(state),
     bags: getBags(state),
@@ -163,9 +184,9 @@ export const DockListView = connect((state: State) => {
     documentsCompleted: getDocumentsCompleted(state),
     documentsAwaitingSignature: getDocumentsAwaitingSignature(state),
     documentsAddressesInOrder: getDocumentsAddressesInOrder(state),
-    isLoading: state.isLoading,
-    searchText: state.searchText,
-    platform: state.platform,
+    isLoading: state.reducer.isLoading,
+    searchText: state.reducer.searchText,
+    platform: state.reducer.platform,
   };
 },
   (dispatch: Dispatch) => {

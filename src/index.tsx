@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom';
 import Root from './Root';
 import { Provider } from "react-redux";
 
-import { store } from "./store/";
+import { store, history } from "./store/";
+import { ConnectedRouter } from 'connected-react-router'
 
 ReactDOM.render(
   <Provider store={store}>
-    <Root />
+    <ConnectedRouter history={history}>
+      <Root />
+    </ConnectedRouter>
   </Provider>
   , document.getElementById('root')
 );

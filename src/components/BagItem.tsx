@@ -52,7 +52,7 @@ const BagItemComponent: React.FC<BagItemProps> = ({
         </IonItemOption>
       </IonItemOptions>
       <IonItem
-        className={`${(!onlyCompleted && document.parent) ? 'with-parent' : ''} ${completed ? 'success' : 'secondary'}`}
+        className={`${(!onlyCompleted && Object.keys(document.signatures).length > 1) ? 'with-parent' : ''} ${completed ? 'success' : 'secondary'}`}
         detail={false}
         button
         onClick={() => {
