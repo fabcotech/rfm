@@ -6,7 +6,7 @@ ion-item {
   --inner-padding-end: 0;
   overflow: visible;
 }
-ion-item.with-parent:before {
+/* ion-item.with-parent:before {
   content: '';
   width: 2px;
   height: 40px;
@@ -20,7 +20,7 @@ ion-item.with-parent.success:before{
 }
 ion-item.with-parent.secondary:before{
   background-color: #3dc2ff;
-}
+} */
 ion-icon {
   z-index: 3;
 }

@@ -27,16 +27,16 @@ import { ReactComponent as RChainLogo } from '../assets/rchain.svg';
 interface LoginViewProps {
   platform: string;
   action: string;
-  init: (a: { registryUri: string; privateKey: string, platform: string }) => void;
+  init: (a: {
+    registryUri: string;
+    privateKey: string;
+    platform: string;
+  }) => void;
 }
 const LoginViewComponent: React.FC<LoginViewProps> = props => {
   const history = useHistory();
-  const [privateKey, setPrivateKey] = useState<string>(
-    ''
-  );
-  const [registryUri, setRegstryUri] = useState<string>(
-    ''
-  );
+  const [privateKey, setPrivateKey] = useState<string>('');
+  const [registryUri, setRegstryUri] = useState<string>('');
 
   const [devLogin, setDevLogin] = useState(false);
 
@@ -95,7 +95,7 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
                       props.init({
                         registryUri: registryUri,
                         privateKey: privateKey,
-                        platform: props.platform
+                        platform: props.platform,
                       });
                     }}
                   >
@@ -105,10 +105,10 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
               </div>
             </React.Fragment>
           ) : (
-              <React.Fragment>
-                <NoIdentityScreen />
-              </React.Fragment>
-            )}
+            <React.Fragment>
+              <NoIdentityScreen />
+            </React.Fragment>
+          )}
           <div className="BottomBar">
             <IonItem>
               <IonLabel>Dev Login: </IonLabel>
@@ -127,8 +127,8 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
             </IonSlide>
           </Suspense>
         ) : (
-            undefined
-          )}
+          undefined
+        )}
         {props.action === 'restore' ? (
           <Suspense fallback={<IonLoading isOpen={true} />}>
             <IonSlide>
@@ -136,8 +136,8 @@ const LoginViewComponent: React.FC<LoginViewProps> = props => {
             </IonSlide>
           </Suspense>
         ) : (
-            undefined
-          )}
+          undefined
+        )}
       </IonSlides>
     </IonContent>
   );
@@ -150,7 +150,11 @@ export const LoginView = connect(
   },
   (dispatch: Dispatch) => {
     return {
-      init: (a: { registryUri: string; privateKey: string, platform: string }) => {
+      init: (a: {
+        registryUri: string;
+        privateKey: string;
+        platform: string;
+      }) => {
         dispatch({
           type: 'INIT',
           payload: {

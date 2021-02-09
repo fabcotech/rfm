@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  IonHeader,
   IonContent,
-  IonToolbar,
-  IonTitle,
   IonLoading,
   IonButtons,
   IonButton,
   IonProgressBar,
-  IonIcon
 } from '@ionic/react';
 import { closeCircle } from 'ionicons/icons';
 import { connect } from 'react-redux';
@@ -55,9 +51,9 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
     setNumPages(docInfo.numPages);
   }
 
-
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version
-    }/pdf.worker.js`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${
+    pdfjs.version
+  }/pdf.worker.js`;
 
   useEffect(() => {
     props.loadBag(props.registryUri, props.bagId, props.state);
@@ -79,14 +75,14 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   }
   let lastSignature = undefined;
   if (document && document.signatures) {
-    if (document.signatures["0"]) lastSignature = "0";
-    if (document.signatures["1"]) lastSignature = "1";
-    if (document.signatures["2"]) lastSignature = "2";
+    if (document.signatures['0']) lastSignature = '0';
+    if (document.signatures['1']) lastSignature = '1';
+    if (document.signatures['2']) lastSignature = '2';
   }
 
   return (
     <>
-      { /*
+      {/*
       <IonHeader>
         <IonToolbar>
           <IonTitle>{props.bagId}</IonTitle>
@@ -101,44 +97,41 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      */ }
-      <IonContent>
+      */}
+      <IonContent class="modal-document">
         {document && 'application/pdf' === document.mimeType ? (
           <PdfDocument
             file={'data:application/pdf;base64,' + document.data}
             loading={renderLoading}
             onLoadSuccess={onDocumentLoadSuccess}
           >
-            {
-              Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <Page
-                    className="PdfPage"
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    pageIndex={index}
-                  />
-                ),
-              )
-            }
+            {Array.from(new Array(numPages), (el, index) => (
+              <Page
+                className="PdfPage"
+                key={`page_${index + 1}`}
+                pageNumber={index + 1}
+                pageIndex={index}
+              />
+            ))}
           </PdfDocument>
         ) : (
-            <React.Fragment />
-          )}
+          <React.Fragment />
+        )}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
-            undefined
-          )}
+          undefined
+        )}
         {document === null ? (
           <span className="no-document">No document attached</span>
         ) : (
-            <div className="qrCodeContainer">
-              <QRCodeComponent url={`did:rchain:${props.registryUri}/${props.bagId}`} />
-            </div>
-          )}
-        { /* document ? (
+          <div className="qrCodeContainer">
+            <QRCodeComponent
+              url={`did:rchain:${props.registryUri}/${props.bagId}`}
+            />
+          </div>
+        )}
+        {/* document ? (
           <div className="ps5">
             <div className="document">
               <div className="left">
@@ -177,47 +170,43 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                 </h5>
               </div>
             </div>
-             */ }
+             */}
 
-        {
-          <IonButtons className="ButtonArray">
-            <IonButton
-              color="primary"
-              onClick={() => {
-                history.replace('/doc', { direction: 'back' });
-              }}
-            >
-              <IonIcon icon={closeCircle} size="large" />
-            </IonButton>
-          </IonButtons>
-        }
+        <IonButtons className="ButtonArray">
+          <IonButton
+            color="primary"
+            onClick={() => {
+              history.replace('/doc', { direction: 'back' });
+            }}
+          >
+            Close
+          </IonButton>
+        </IonButtons>
 
-        {
-          document &&
+        {document && (
           <div className="FloatingBottomLeft">
             {Object.keys(document.signatures).map(s => {
               return (
                 <p className="signature-line" key={s}>
-                  {checkSignature(signedDocument as Document, s)
-                    ? <>
+                  {checkSignature(signedDocument as Document, s) ? (
+                    <>
                       <span className="signature-ok">✓</span>
-                      {`signature n°${s} verified (${document.signatures[s].publicKey.slice(
-                        0,
-                        12
-                      )}…)`}
+                      {`signature n°${s} verified (${document.signatures[
+                        s
+                      ].publicKey.slice(0, 12)}…)`}
                     </>
-                    : <>
+                  ) : (
+                    <>
                       <span>✗</span>
-                      {`signature n°${s} invalid (${document.signatures[s].publicKey.slice(
-                        0,
-                        12
-                      )}…)`}
+                      {`signature n°${s} invalid (${document.signatures[
+                        s
+                      ].publicKey.slice(0, 12)}…)`}
                     </>
-                  }
+                  )}
                 </p>
               );
             })}
-            {[undefined, "0", "1"].includes(lastSignature) &&
+            {[undefined, '0', '1'].includes(lastSignature) && (
               <IonButton
                 className="SignatureRequiredBtn"
                 size="default"
@@ -227,9 +216,9 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
               >
                 Your signature required
               </IonButton>
-            }
+            )}
           </div>
-        }
+        )}
       </IonContent>
     </>
   );
@@ -240,7 +229,7 @@ const ModalDocument = connect(
     return {
       bags: state.reducer.bags,
       bagsData: state.reducer.bagsData,
-      state: state
+      state: state,
     };
   },
   (dispatch: Dispatch) => {
@@ -251,7 +240,7 @@ const ModalDocument = connect(
           payload: {
             registryUri: registryUri,
             bagId: bagId,
-            state: state
+            state: state,
           },
         });
       },

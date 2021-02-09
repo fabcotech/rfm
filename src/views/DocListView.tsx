@@ -5,7 +5,6 @@ import { useHistory } from 'react-router';
 
 import {
   IonContent,
-  IonModal,
   IonProgressBar,
   IonFab,
   IonFabButton,
@@ -13,14 +12,23 @@ import {
 } from '@ionic/react';
 import { qrCode } from 'ionicons/icons';
 
-import { getBags, getBagsData, getConnected, getDocumentsAddressesInOrder, getDocumentsAwaitingSignature, getDocumentsCompleted, State, HistoryState } from '../store';
+import {
+  getBags,
+  getBagsData,
+  getConnected,
+  getDocumentsAddressesInOrder,
+  getDocumentsAwaitingSignature,
+  getDocumentsCompleted,
+  State,
+  HistoryState,
+} from '../store';
 import Horizontal from '../components/Horizontal';
 import BagItem from '../components/BagItem';
 import DummyBagItem from '../components/dummy/DummyBagItem';
 import ModalDocument from '../components/ModalDocument';
 import ModalUploadDocument from '../components/ModalUploadDocument';
 
-import { parse } from "did-resolver";
+import { parse } from 'did-resolver';
 
 /*
 declare global {
@@ -63,29 +71,23 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
   const scanQRCode = () => {
     (window as any).cordova.plugins.barcodeScanner.scan(
       (result: any) => {
-
         try {
           const parsedDid = parse(result.text);
           const method = parsedDid.method;
 
-          if (method === "rchain") {
-            let link = "/doc/show/" + parsedDid.id;
+          if (method === 'rchain') {
+            let link = '/doc/show/' + parsedDid.id;
             if (parsedDid.path) {
               link = link + parsedDid.path;
             }
-            history.push(
-              link
-            );
+            history.push(link);
           }
-        }
-        catch (err) {
-          console.info("not a DID. " + err);
+        } catch (err) {
+          console.info('not a DID. ' + err);
 
           const url = new URL(result.text);
           //TODO: check if link is also a valid hosted web app
-          history.push(
-            url.pathname + url.search
-          );
+          history.push(url.pathname + url.search);
         }
       },
       (err: string) => {
@@ -93,102 +95,93 @@ const DockListViewComponent: React.FC<DockListViewProps> = props => {
       },
       {
         showTorchButton: true,
-        prompt: "Scan document URL",
-        formats: "QR_CODE",
-        resultDisplayDuration: 0
+        prompt: 'Scan document URL',
+        formats: 'QR_CODE',
+        resultDisplayDuration: 0,
       }
+    );
+  };
+
+  if (props.action === 'show') {
+    return (
+      <IonContent>
+        <ModalDocument
+          registryUri={props.registryUri as string}
+          bagId={props.bagId as string}
+        />
+      </IonContent>
+    );
+  }
+
+  if (props.action === 'upload') {
+    return (
+      <IonContent>
+        <ModalUploadDocument />
+      </IonContent>
     );
   }
 
   return (
     <IonContent>
-      { props.platform !== "web" ?
+      {props.platform !== 'web' ? (
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
           <IonFabButton color="tertiary" onClick={scanQRCode}>
             <IonIcon icon={qrCode} />
           </IonFabButton>
         </IonFab>
-        : undefined
-      }
-      {
-        /*
+      ) : (
+        undefined
+      )}
+      {/*
         props.isLoading && props.action === "list"
         ? renderLoading()
         : undefined
         */}
       <Horizontal />
-      {props.action === 'show' ? (
-        <IonModal
-          isOpen={true}
-          onWillDismiss={() => {
-            history.push('/doc/');
-          }}
-        >
-          <ModalDocument
-            registryUri={props.registryUri as string}
-            bagId={props.bagId as string}
-          />
-        </IonModal>
-      ) : (
-          undefined
-        )}
-      {props.action === 'upload' ? (
-        <IonModal
-          isOpen={true}
-          onWillDismiss={() => {
-            history.push('/doc/');
-          }}
-        >
-          <ModalUploadDocument />
-        </IonModal>
-      ) : (
-          undefined
-        )}
       {props.action === 'list' ? (
         <>
           {!props.isLoading
             ? props.documentsAddressesInOrder.map(address => {
-              return (
-                <BagItem
-                  key={address}
-                  registryUri={props.registryUri}
-                  id={address}
-                  bag={props.bags[address]}
-                  document={props.bagsData[address]}
-                  onlyCompleted={false}
-                  awaitsSignature={
-                    !!props.documentsAwaitingSignature[address]
-                  }
-                  completed={
-                    !!props.documentsCompleted[address]
-                  }
-                />
-              );
-            })
+                return (
+                  <BagItem
+                    key={address}
+                    registryUri={props.registryUri}
+                    id={address}
+                    bag={props.bags[address]}
+                    document={props.bagsData[address]}
+                    onlyCompleted={false}
+                    awaitsSignature={
+                      !!props.documentsAwaitingSignature[address]
+                    }
+                    completed={!!props.documentsCompleted[address]}
+                  />
+                );
+              })
             : [...Array(10)].map((x, i) => (
-              <DummyBagItem key={i} id={i.toString()} />
-            ))}
+                <DummyBagItem key={i} id={i.toString()} />
+              ))}
         </>
       ) : (
-          undefined
-        )}
+        undefined
+      )}
     </IonContent>
   );
 };
 
-export const DockListView = connect((state: HistoryState) => {
-  return {
-    connected: getConnected(state),
-    bags: getBags(state),
-    bagsData: getBagsData(state),
-    documentsCompleted: getDocumentsCompleted(state),
-    documentsAwaitingSignature: getDocumentsAwaitingSignature(state),
-    documentsAddressesInOrder: getDocumentsAddressesInOrder(state),
-    isLoading: state.reducer.isLoading,
-    searchText: state.reducer.searchText,
-    platform: state.reducer.platform,
-  };
-},
+export const DockListView = connect(
+  (state: HistoryState) => {
+    return {
+      connected: getConnected(state),
+      bags: getBags(state),
+      bagsData: getBagsData(state),
+      documentsCompleted: getDocumentsCompleted(state),
+      documentsAwaitingSignature: getDocumentsAwaitingSignature(state),
+      documentsAddressesInOrder: getDocumentsAddressesInOrder(state),
+      isLoading: state.reducer.isLoading,
+      searchText: state.reducer.searchText,
+      platform: state.reducer.platform,
+    };
+  },
   (dispatch: Dispatch) => {
     return {};
   }
