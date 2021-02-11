@@ -3,20 +3,16 @@ import * as rchainToolkit from 'rchain-toolkit';
 import { deflate } from 'pako';
 import { v4 } from 'uuid';
 
-import { Document, store, State, getBagsData, Signature } from '../';
-import replacer from '../../utils/replacer';
-import generateSignature from '../../utils/generateSignature';
-import { addressFromBagId } from 'src/utils/addressFromBagId';
-
-import { getPrivateKey, HistoryState } from '../index';
-
 import KeyResolver from 'key-did-resolver';
-import { getResolver as getRchainResolver } from "rchain-did-resolver";
+import { getResolver as getRchainResolver } from 'rchain-did-resolver';
 import { Secp256k1Provider } from 'key-did-provider-secp256k1';
 import { DID } from 'dids';
-import { parse } from "did-resolver";
-import { encodeBase64 } from 'dids/lib/utils'
+import { parse } from 'did-resolver';
+import { encodeBase64 } from 'dids/lib/utils';
 
+import { Document, store, getBagsData } from '../';
+import replacer from '../../utils/replacer';
+import { getPrivateKey, HistoryState } from '../index';
 
 const { purchaseTokensTerm } = require('rchain-token-files');
 
@@ -25,17 +21,19 @@ const reuploadBagData = function*(action: {
   payload: { bagId: string; registryUri: string };
 }) {
   console.log('reuploload-bag-data', action.payload);
-  const state : HistoryState = store.getState();
+  const state: HistoryState = store.getState();
   const bagsData = getBagsData(state);
 
   const publicKey = state.reducer.publicKey;
   const privateKey = yield getPrivateKey(state);
 
-  const did = new DID({ resolver: { ...yield getRchainResolver(), ...KeyResolver.getResolver() } })
+  const did = new DID({
+    resolver: { ...(yield getRchainResolver()), ...KeyResolver.getResolver() },
+  });
   const authSecret = Buffer.from(privateKey, 'hex');
-  const provider = new Secp256k1Provider(authSecret)
+  const provider = new Secp256k1Provider(authSecret);
 
-  yield did.authenticate({ provider: provider })
+  yield did.authenticate({ provider: provider });
 
   const document =
     bagsData[`${action.payload.registryUri}/${action.payload.bagId}`];
@@ -60,7 +58,6 @@ const reuploadBagData = function*(action: {
     console.error('Signature 0, 1 and 2 are already on document');
     return;
   }
-  console.log('newBagId', newBagId); 
 
   const signedDocument = {
     ...document,
@@ -71,29 +68,32 @@ const reuploadBagData = function*(action: {
 
   const fileDocument = {
     ...signedDocument,
-  } as Document
+  } as Document;
 
   let recipient;
   if (fileDocument.scheme) {
-    recipient = fileDocument.scheme[(parseInt(i)+1) % 3];
+    recipient = fileDocument.scheme[parseInt(i) % 3];
   } else {
-    recipient = "did:rchain:" + state.reducer.registryUri;
+    recipient = 'did:rchain:' + state.reducer.registryUri;
   }
 
   const parsedDid = parse(recipient);
   const addr = parsedDid.id;
 
   const { jws, linkedBlock } = yield did.createDagJWS(fileDocument);
-  const jwe = yield did.createDagJWE({jws: jws, data: encodeBase64(linkedBlock)}, [recipient], {
-    protectedHeader: {
-      alg: "A256GCMKW"
+  const jwe = yield did.createDagJWE(
+    { jws: jws, data: encodeBase64(linkedBlock) },
+    [recipient],
+    {
+      protectedHeader: {
+        alg: 'A256GCMKW',
+      },
     }
-  })
+  );
 
   const stringifiedJws = JSON.stringify(jwe, replacer);
   const deflatedJws = deflate(stringifiedJws);
   const gzipped = Buffer.from(deflatedJws).toString('base64');
-
 
   const payload = {
     publicKey: publicKey,
@@ -105,7 +105,7 @@ const reuploadBagData = function*(action: {
     data: gzipped,
   };
 
-  did.deauthenticate()
+  did.deauthenticate();
 
   const term = purchaseTokensTerm(addr as string, payload);
 
