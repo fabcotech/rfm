@@ -46,6 +46,10 @@ const AppComponent: React.FC<AppProps> = props => {
   const redfill = React.useRef(null);
   const [showIdentity, setShowIdentity] = useState(false);
 
+  const shortenName = () => {
+    return "did:rchain:" + props.registryUri?.substring(0, 6) + "..." + props.registryUri?.substring(48, 54)
+  }
+
   const ToggleIdentityView = () => {
     setShowIdentity(!showIdentity);
     console.info(showIdentity);
@@ -151,7 +155,7 @@ const AppComponent: React.FC<AppProps> = props => {
               <IonIcon icon={closeCircleOutline} size="large" />
             ) : (
                 <div className="UserInfo" >
-                  <IonLabel>did:rchain:...</IonLabel>
+                  <IonLabel>{shortenName()}</IonLabel>
                   <IonIcon icon={personCircle} size="large" />
                 </div>
               )}
