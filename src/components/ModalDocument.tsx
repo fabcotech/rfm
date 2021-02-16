@@ -51,9 +51,8 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
     setNumPages(docInfo.numPages);
   }
 
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${
-    pdfjs.version
-  }/pdf.worker.js`;
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version
+    }/pdf.worker.js`;
 
   useEffect(() => {
     props.loadBag(props.registryUri, props.bagId, props.state);
@@ -115,22 +114,25 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
             ))}
           </PdfDocument>
         ) : (
-          <React.Fragment />
-        )}
+            <React.Fragment />
+          )}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
-          undefined
-        )}
+            undefined
+          )}
         {document === null ? (
           <span className="no-document">No document attached</span>
         ) : (
-          <div className="qrCodeContainer">
-            <QRCodeComponent
-              url={`did:rchain:${props.registryUri}/${props.bagId}`}
-            />
-          </div>
-        )}
+            /*
+            <div className="qrCodeContainer">
+              <QRCodeComponent
+                url={`did:rchain:${props.registryUri}/${props.bagId}`}
+              />
+            </div>
+            */
+            undefined
+          )}
         {/* document ? (
           <div className="ps5">
             <div className="document">
@@ -196,13 +198,13 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                       ].publicKey.slice(0, 12)}…)`}
                     </>
                   ) : (
-                    <>
-                      <span>✗</span>
-                      {`signature n°${s} invalid (${document.signatures[
-                        s
-                      ].publicKey.slice(0, 12)}…)`}
-                    </>
-                  )}
+                      <>
+                        <span>✗</span>
+                        {`signature n°${s} invalid (${document.signatures[
+                          s
+                        ].publicKey.slice(0, 12)}…)`}
+                      </>
+                    )}
                 </p>
               );
             })}

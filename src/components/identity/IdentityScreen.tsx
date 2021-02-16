@@ -10,14 +10,33 @@ import {
 } from '@ionic/react';
 import './IdentityScreen.scoped.css';
 
-import Avatar from '../../assets/avatar.jpg';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { HistoryState } from '../../store';
+import QRCodeComponent from '../QRCodeComponent';
 
-const IdentityScreenComponent: React.FC = (props) => {
+//import Avatar from '../../assets/avatar.jpg';
+
+interface IdentityScreenComponentProps {
+  registryUri: string | undefined;
+}
+const IdentityScreenComponent: React.FC<IdentityScreenComponentProps> = (props) => {
+
+  const shortenName = () => {
+    return "did:rchain:" + props.registryUri?.substring(0, 6) + "..." + props.registryUri?.substring(48, 54)
+  }
+
+  const qrCodeContent = () => {
+    return `did:rchain:${props.registryUri}`;
+  }
 
   return (
     <IonSlide>
       <IonGrid>
-        <img className="Avatar" src={Avatar} alt="Avatar" />
+        {/* (<img className="Avatar" src={Avatar} alt="Avatar" />) */}
+        <QRCodeComponent
+          url={qrCodeContent()}
+        />
         <IonRow>
           <IonCol>
             <IonLabel>Theo Hallenius</IonLabel>
@@ -25,7 +44,7 @@ const IdentityScreenComponent: React.FC = (props) => {
         </IonRow>
         <IonRow>
           <IonCol>
-            <IonLabel>did:rchain:fer3fs..kcer2</IonLabel>
+            {(props.registryUri ? <IonLabel>{shortenName()}</IonLabel> : undefined)}
           </IonCol>
         </IonRow>
         <IonRow>
@@ -48,4 +67,14 @@ const IdentityScreenComponent: React.FC = (props) => {
   )
 };
 
-export default IdentityScreenComponent;
+const IdentityScreen = connect(
+  (state: HistoryState) => {
+    return {
+      registryUri: state.reducer.registryUri
+    }
+  },
+  (dispatch: Dispatch) => { }
+)(IdentityScreenComponent);
+
+export default IdentityScreen;
+
