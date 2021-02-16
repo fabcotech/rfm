@@ -2,7 +2,7 @@ import { takeEvery, put } from 'redux-saga/effects';
 import * as rchainToolkit from 'rchain-toolkit';
 import {CombinedState} from 'redux';
 
-import { store, State, Bag, AccountStorage, Document, Signature } from '..';
+import { store, State, Bag, AccountStorage, Document, Signature, getPrivateKey } from '..';
 import { addressFromBagId } from '../../utils/addressFromBagId';
 import { inflate } from 'pako';
 
@@ -31,8 +31,9 @@ const {
   read,
 } = require('rchain-token-files');
 
-const load = function* (action: { type: string; payload: any}) {
+const refresh = function* (action: { type: string; payload: any}) {
   const state : CombinedState<{ router: RouterState<unknown>; reducer: State; }> = store.getState();
+  
   yield put(
     {
       type: "SET_LOADING",
@@ -40,8 +41,10 @@ const load = function* (action: { type: string; payload: any}) {
     }
   );
 
+  const privateKey: string = yield getPrivateKey(state);
+
   const pubKey = rchainToolkit.utils.publicKeyFromPrivateKey(
-    action.payload.privateKey as string
+    privateKey as string
   )
 
   const term1 = readBagsTerm(action.payload.registryUri);
@@ -59,6 +62,7 @@ const load = function* (action: { type: string; payload: any}) {
       term: term2
     }
   )
+  const rchainTokenValues = rchainToolkit.utils.rhoValToJs(JSON.parse(ed2).expr[0])
 
   const term3 = readBagsOrTokensDataTerm(action.payload.registryUri, 'bags');
   const ed3 = yield rchainToolkit.http.exploreDeploy(
@@ -68,30 +72,8 @@ const load = function* (action: { type: string; payload: any}) {
     }
   )
 
-  const rchainTokenValues = rchainToolkit.utils.rhoValToJs(JSON.parse(ed2).expr[0])
-  
-  if (["ios", "android"].includes(state.reducer.platform)) {
-    const available = yield FingerprintAIO.isAvailable();
-    if (available) {
-      yield FingerprintAIO.registerBiometricSecret({
-        description: "Register this private key?",
-        secret: action.payload.privateKey,
-        invalidateOnEnrollment: false,
-        disableBackup: true, // always disabled on Android
-      })
-    }
-  }
-  else {
-    const record = { key: pubKey, value: JSON.stringify({
-      registryUri: action.payload.registryUri,
-      privateKey: action.payload.privateKey
-      } as AccountStorage)
-     }
-    SecureStoragePlugin.set(record)
-  }
-
   const did = new DID({ resolver: { ...yield getRchainResolver(), ...KeyResolver.getResolver() } })
-  const authSecret = Buffer.from(action.payload.privateKey, 'hex');
+  const authSecret = Buffer.from(privateKey, 'hex');
   const provider = new Secp256k1Provider(authSecret)
 
   yield did.authenticate({ provider: provider })
@@ -194,11 +176,9 @@ const load = function* (action: { type: string; payload: any}) {
     }
   );
 
-  store.dispatch(push('/doc'))
-
   return true;
 };
 
-export const initSaga = function* () {
-  yield takeEvery("INIT", load);
+export const refreshSaga = function* () {
+  yield takeEvery("REFRESH", refresh);
 };

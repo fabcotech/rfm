@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Dispatch } from 'redux';
-import * as rchainToolkit from 'rchain-toolkit';
 import {
   IonItem,
   IonRefresher,
@@ -15,15 +14,13 @@ import { refreshOutline } from 'ionicons/icons';
 
 import { useHistory } from 'react-router';
 import './Horizontal.scoped.css';
-import { getConnected, State, getPrivateKey, HistoryState } from '../store';
-import { loadBagDataSaga } from 'src/store/sagas/loadBagData';
+import { HistoryState } from '../store';
 
 interface HorizontalProps {
-  state: HistoryState,
-  connected: string;
   registryUri: string;
+  publicKey: string;
   searchText: string;
-  init: (a: { state: HistoryState; registryUri: string }) => void;
+  refresh: (a: { publicKey: string; registryUri: string }) => void;
   setSearchText: (searchText: string) => void;
 }
 
@@ -31,15 +28,11 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
   const history = useHistory();
 
   const doFetch = () => {
-    props.init({
-      state: props.state,
+    props.refresh({
       registryUri: props.registryUri,
+      publicKey: props.publicKey,
     });
   };
-
-  useEffect(() => {
-    doFetch();
-  }, []);
 
   const doRefresh = (event: CustomEvent<RefresherEventDetail>) => {
     doFetch();
@@ -51,11 +44,11 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
       <IonRefresher slot="fixed" onIonRefresh={doRefresh}>
         <IonRefresherContent />
       </IonRefresher>
-      { /*
+      {/*
       <div>
         <IonItem class="connectedAs">Connected as {props.connected}</IonItem>
       </div>
-      */ }
+      */}
       <div>
         <IonItem
           detail={false}
@@ -63,7 +56,7 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
           lines="none"
           className="SearchBarContainer"
         >
-          {props.connected === 'owner' && <IonButton
+          <IonButton
             className="AddButton with-border"
             icon-only
             slot="start"
@@ -74,8 +67,7 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
             }}
           >
             <span>upload</span>
-          </IonButton>}
-          {' '}
+          </IonButton>{' '}
           <IonButton
             className="AddButton with-border"
             icon-only
@@ -83,16 +75,10 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
             color="none"
             size="default"
             onClick={() => {
-              console.log(props.registryUri);
-              props.init({
-                state: props.state,
-                registryUri: props.registryUri,
-              })
+              doFetch();
             }}
           >
-            <IonIcon icon={refreshOutline}></IonIcon>
-            {' '}
-            <span>refresh</span>
+            <IonIcon icon={refreshOutline} /> <span>refresh</span>
           </IonButton>
           <IonSearchbar
             color="none"
@@ -108,15 +94,18 @@ const HorizontalComponent: React.FC<HorizontalProps> = props => {
 const Horizontal = connect(
   (state: HistoryState) => {
     return {
-      state: state,
-      connected: getConnected(state),
       registryUri: state.reducer.registryUri as string,
+      publicKey: state.reducer.publicKey as string,
       searchText: state.reducer.searchText as string,
     };
   },
   (dispatch: Dispatch) => {
     return {
-      init: async (a: { state: HistoryState; registryUri: string }) => {
+      refresh: (a: { publicKey: string; registryUri: string }) => {
+        dispatch({
+          type: 'REFRESH',
+          payload: a,
+        });
       },
 
       setSearchText: (searchText: string) => {
