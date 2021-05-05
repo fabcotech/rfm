@@ -5,8 +5,10 @@ import {
   IonButtons,
   IonButton,
   IonProgressBar,
+  IonIcon,
+  IonLabel
 } from '@ionic/react';
-import { closeCircle } from 'ionicons/icons';
+import { closeCircle, downloadOutline } from 'ionicons/icons';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { useHistory } from 'react-router';
@@ -14,7 +16,7 @@ import { Page, pdfjs, Document as PdfDocument } from 'react-pdf';
 
 import QRCodeComponent from './QRCodeComponent';
 import checkSignature from '../utils/checkSignature';
-import { State, Document, HistoryState } from '../store';
+import { State, Document, HistoryState, getPlatform } from '../store';
 
 import './ModalDocument.scoped.css';
 import { addressFromBagId } from 'src/utils/addressFromBagId';
@@ -31,6 +33,7 @@ interface ModalDocumentProps {
   bagId: string;
   bags: State['bags'];
   bagsData: State['bagsData'];
+  platform: string;
   loadBag: (registryUri: string, bagId: string, state: HistoryState) => void;
   reupload: (resitryUri: string, bagId: string) => void;
 }
@@ -63,6 +66,25 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
   };
 
   const address = addressFromBagId(props.registryUri, props.bagId);
+
+  const doDownload = () => {
+    if (props.platform === "web") {
+      var fileUrl = "data:" + document.mimeType + ";base64," + document.data;
+
+      fetch(fileUrl).then(response => response.blob()).then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const link = window.document.createElement("a");
+        link.href = url;
+        const fileName = document.name;
+        link.setAttribute("download", fileName);
+        window.document.body.appendChild(link);
+        link.click();
+      });
+    }
+    else {
+      //TODO
+    }
+  };
 
   const document = props.bagsData[address];
   let signedDocument: Document | undefined;
@@ -98,6 +120,9 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
       </IonHeader>
       */}
       <IonContent class="modal-document">
+        <div className="TopLeftStrip"><IonButton className="DownloadButton" onClick={() => {
+          doDownload();
+        }}><IonIcon icon={downloadOutline} size="small" /><IonLabel>Download</IonLabel></IonButton></div>
         {document && 'application/pdf' === document.mimeType ? (
           <PdfDocument
             file={'data:application/pdf;base64,' + document.data}
@@ -114,25 +139,25 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
             ))}
           </PdfDocument>
         ) : (
-            <React.Fragment />
-          )}
+          <React.Fragment />
+        )}
         {typeof document === 'undefined' ? (
           <IonLoading isOpen={true} />
         ) : (
-            undefined
-          )}
+          undefined
+        )}
         {document === null ? (
           <span className="no-document">No document attached</span>
         ) : (
-            /*
-            <div className="qrCodeContainer">
-              <QRCodeComponent
-                url={`did:rchain:${props.registryUri}/${props.bagId}`}
-              />
-            </div>
-            */
-            undefined
-          )}
+          /*
+          <div className="qrCodeContainer">
+            <QRCodeComponent
+              url={`did:rchain:${props.registryUri}/${props.bagId}`}
+            />
+          </div>
+          */
+          undefined
+        )}
         {/* document ? (
           <div className="ps5">
             <div className="document">
@@ -198,13 +223,13 @@ const ModalDocumentComponent: React.FC<ModalDocumentProps> = (
                       ].publicKey.slice(0, 12)}…)`}
                     </>
                   ) : (
-                      <>
-                        <span>✗</span>
-                        {`signature n°${s} invalid (${document.signatures[
-                          s
-                        ].publicKey.slice(0, 12)}…)`}
-                      </>
-                    )}
+                    <>
+                      <span>✗</span>
+                      {`signature n°${s} invalid (${document.signatures[
+                        s
+                      ].publicKey.slice(0, 12)}…)`}
+                    </>
+                  )}
                 </p>
               );
             })}
@@ -232,6 +257,7 @@ const ModalDocument = connect(
       bags: state.reducer.bags,
       bagsData: state.reducer.bagsData,
       state: state,
+      platform: getPlatform(state),
     };
   },
   (dispatch: Dispatch) => {
