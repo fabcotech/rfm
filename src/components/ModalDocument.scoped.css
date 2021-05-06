@@ -63,3 +63,17 @@
   right: 0;
   margin: 1em;
 }
+
+.TopLeftStrip {
+  position: fixed;
+  background: var(--ion-color-primary);
+  box-shadow: 0 4px 2px -2px gray;
+  border-bottom-left-radius: 0.25em;
+  border-bottom-right-radius: 0.25em;
+  z-index: 1;
+  margin-left: 1em;
+}
+
+.DownloadButton {
+  --box-shadow: none;
+}
